@@ -1,0 +1,24 @@
+<ul>
+  {{#each theaterList as theater}}
+    <li class="theater">
+      <Theater theater="{{theater}}" theaters="{{theaters}}" movies="{{movies}}"/>
+    </li>
+  {{/each}}
+</ul>
+
+<script>
+import Theater from './Theater.html';
+import values from 'lodash/values';
+
+export default {
+  data () {
+    return {}
+  },
+  components: {
+    Theater,
+  },
+  computed: {
+    theaterList: theaters => values(theaters),
+  }
+};
+</script>

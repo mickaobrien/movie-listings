@@ -1,0 +1,49 @@
+<div>
+  <TheaterList theaters="{{theaters}}" movies="{{movies}}" />
+</div>
+
+<script>
+import TheaterList from './TheaterList.html';
+import getData from '../helpers/requests';
+import find from 'lodash/find';
+import includes from 'lodash/includes';
+import values from 'lodash/values';
+
+export default {
+  data () {
+    return {
+      theaters: [],
+      movies: {},
+    }
+  },
+  onrender () {
+    const self = this;
+    getData()
+      .then(function(json) { 
+        // let theaters = values(json.theaters);
+        let theaters = json.theaters;
+        let movies = json.movies;
+
+        Object.keys(json.movies).forEach(movieID => {
+          let theatersShowing = [];
+          values(json.theaters).forEach(theater => {
+            const movieIDs = theater.movies.map(movie => movie.id.toString());
+            if (includes(movieIDs, movieID)) {
+              //theatersShowing.push(theater.id)
+              theatersShowing.push({
+                'theater': theater.name,
+                'showtimes': find(theater.movies, { 'id': parseInt(movieID) }).presentations
+              });
+            }
+          });
+          json.movies[movieID].theaters = theatersShowing;
+        });
+
+        self.set({ theaters: theaters, movies: movies });
+      });
+  },
+  components: {
+    TheaterList,
+  },
+};
+</script>

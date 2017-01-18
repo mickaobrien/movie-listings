@@ -1,0 +1,51 @@
+<div class="theater-heading">
+  <h2 class="theater-name">{{theater.name}}</h2>
+  <div class="theater-details">{{theater.address.street}}, {{theater.address.city}} - <a href="tel:{{theater.callablePhone}}">{{theater.phone}}</a></div>
+</div>
+<ul class="movie-list">
+  {{#each currentMovies as movie}}
+    <li class="movie">
+      <div class="">
+        <img class="poster-listing" src="{{movie.info.poster.detailed}}"/> 
+        <div>
+          <a href="#" on:click='showMovieInfo(movie.id)'>{{movie.info.title}}</a> ({{movie.info.runningTime}})
+        </div>
+      </div>
+      <div class="">
+        <div>
+          {{ formatShowtimes(movie.showtimes) }}
+        </div>
+      </div>
+    </li>
+  {{/each}}
+</ul>
+
+<script>
+import { formatTimeString } from '../helpers/formatting';
+import includes from 'lodash/includes';
+
+export default {
+  computed: {
+    currentMovies: (theater, movies) => {
+      return theater.movies.map(function(movie) {
+        movie.info = movies[movie.id];
+        movie.showtimes = movie.presentations[0].traitGroups[0].performances;
+        return movie;
+      });
+    },
+  },
+  helpers: {
+    formatShowtimes: showtimes => {
+      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
+      return times.join(', ')
+    }
+  },
+  methods: {
+    //TODO do all this calculation at the start? store in movie
+    showMovieInfo ( movieID ) {
+      const movie = this.get('movies')[movieID];
+      console.log(movie.theaters);
+    }
+  },
+};
+</script>

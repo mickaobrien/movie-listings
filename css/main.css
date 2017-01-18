@@ -1,0 +1,41 @@
+.page-title {
+  text-align: center;
+  padding: 1em 0;
+  text-transform: uppercase;
+  background-color: hsl(277, 84%, 55%);
+  color: #eee;
+  font-weight: bold;
+}
+
+.theater {
+  background-color: #fff;
+  list-style: none;
+  padding-bottom: 1em;
+  border: solid 1px hsl(277, 54%, 55%);
+  margin-bottom: 1em;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.theater-heading {
+  background-color: hsl(277, 50%, 92%);
+  padding: 1em 0;
+}
+
+.theater-name {
+  text-align: center;
+}
+
+.theater-details {
+  text-align: center;
+  font-size: 0.8em;
+  padding-bottom: 0.5em;
+}
+
+.movie-list {
+  margin: 1em 0;
+}
+
+.movie {
+  list-style: none;
+  padding: 0 1em 1em 1em;
+}
