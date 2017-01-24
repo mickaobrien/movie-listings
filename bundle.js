@@ -1350,13 +1350,7 @@ function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, compone
 	div.className = '';
 	
 	li.appendChild( div );
-	
-	var img = document.createElement( 'img' );
-	img.className = "poster-listing";
-	img.src = movie.info.poster.detailed;
-	
-	div.appendChild( img );
-	div.appendChild( document.createTextNode( " \n        " ) );
+	div.appendChild( document.createTextNode( "\n        " ) );
 	
 	var div1 = document.createElement( 'div' );
 	
@@ -1405,8 +1399,6 @@ function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, compone
 		
 		update: function ( changed, root, eachBlock_value, movie, movie__index ) {
 			var movie = eachBlock_value[movie__index];
-			
-			img.src = movie.info.poster.detailed;
 			
 			a.__svelte.eachBlock_value = eachBlock_value;
 			a.__svelte.movie__index = movie__index;
