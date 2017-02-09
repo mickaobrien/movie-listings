@@ -1,12 +1,12 @@
 <div id="movie-container">
-  <div id="current-movie">
-    <div class="movie-header">
-      <div class="movie-title">
-        <div>{{movie.title}}</div>  
-        <div class="movie-details">  {{movie.runningTime}} / {{movie.mpaa}}</div>
-      </div>
-      <div class="close-movie" on:click='fire( "closeCurrentMovie" )'>X</div>
+  <div class="movie-header">
+    <div class="movie-title">
+      <div>{{movie.title}}</div>  
+      <div class="movie-details">  {{movie.runningTime}} / {{movie.mpaa}}</div>
     </div>
+    <div class="close-movie" on:click='fire( "closeCurrentMovie" )'>X</div>
+  </div>
+  <div id="current-movie">
     <div class="movie-info">
       <div class="movie-poster">
         <img src="{{movie.poster.detailed}}">

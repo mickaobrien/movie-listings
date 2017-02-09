@@ -1547,55 +1547,55 @@ function renderMainFragment$3 ( root, component ) {
 	div.id = "movie-container";
 	
 	var div1 = document.createElement( 'div' );
-	div1.id = "current-movie";
+	div1.className = "movie-header";
 	
 	div.appendChild( div1 );
 	
 	var div2 = document.createElement( 'div' );
-	div2.className = "movie-header";
+	div2.className = "movie-title";
 	
 	div1.appendChild( div2 );
 	
 	var div3 = document.createElement( 'div' );
-	div3.className = "movie-title";
 	
 	div2.appendChild( div3 );
+	var text = document.createTextNode( root.movie.title );
+	div3.appendChild( text );
+	div2.appendChild( document.createTextNode( "  \n      " ) );
 	
 	var div4 = document.createElement( 'div' );
+	div4.className = "movie-details";
 	
-	div3.appendChild( div4 );
-	var text = document.createTextNode( root.movie.title );
-	div4.appendChild( text );
-	div3.appendChild( document.createTextNode( "  \n        " ) );
+	div2.appendChild( div4 );
+	var text2 = document.createTextNode( root.movie.runningTime );
+	div4.appendChild( text2 );
+	div4.appendChild( document.createTextNode( " / " ) );
+	var text4 = document.createTextNode( root.movie.mpaa );
+	div4.appendChild( text4 );
+	div1.appendChild( document.createTextNode( "\n    " ) );
 	
 	var div5 = document.createElement( 'div' );
-	div5.className = "movie-details";
-	
-	div3.appendChild( div5 );
-	var text2 = document.createTextNode( root.movie.runningTime );
-	div5.appendChild( text2 );
-	div5.appendChild( document.createTextNode( " / " ) );
-	var text4 = document.createTextNode( root.movie.mpaa );
-	div5.appendChild( text4 );
-	div2.appendChild( document.createTextNode( "\n      " ) );
-	
-	var div6 = document.createElement( 'div' );
-	div6.className = "close-movie";
+	div5.className = "close-movie";
 	
 	function clickHandler ( event ) {
 		component.fire( "closeCurrentMovie" );
 	}
 	
-	div6.addEventListener( 'click', clickHandler, false );
+	div5.addEventListener( 'click', clickHandler, false );
 	
-	div2.appendChild( div6 );
-	div6.appendChild( document.createTextNode( "X" ) );
-	div1.appendChild( document.createTextNode( "\n    " ) );
+	div1.appendChild( div5 );
+	div5.appendChild( document.createTextNode( "X" ) );
+	div.appendChild( document.createTextNode( "\n  " ) );
+	
+	var div6 = document.createElement( 'div' );
+	div6.id = "current-movie";
+	
+	div.appendChild( div6 );
 	
 	var div7 = document.createElement( 'div' );
 	div7.className = "movie-info";
 	
-	div1.appendChild( div7 );
+	div6.appendChild( div7 );
 	
 	var div8 = document.createElement( 'div' );
 	div8.className = "movie-poster";
@@ -1660,12 +1660,12 @@ function renderMainFragment$3 ( root, component ) {
 	var text17 = document.createTextNode( root.movie.reviews.rottenTomatoes.rating );
 	span.appendChild( text17 );
 	span.appendChild( document.createTextNode( "%" ) );
-	div1.appendChild( document.createTextNode( "\n    " ) );
+	div6.appendChild( document.createTextNode( "\n    " ) );
 	
 	var div11 = document.createElement( 'div' );
 	div11.className = "all-showtimes flex-grid";
 	
-	div1.appendChild( div11 );
+	div6.appendChild( div11 );
 	var eachBlock_anchor = document.createComment( "#each movie.theaters" );
 	div11.appendChild( eachBlock_anchor );
 	var eachBlock_value = root.movie.theaters;
@@ -1719,7 +1719,7 @@ function renderMainFragment$3 ( root, component ) {
 		},
 		
 		teardown: function ( detach ) {
-			div6.removeEventListener( 'click', clickHandler, false );
+			div5.removeEventListener( 'click', clickHandler, false );
 			
 			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
 				eachBlock_iterations[i].teardown( false );
