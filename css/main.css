@@ -67,8 +67,7 @@
   right: 0;
   overflow: scroll;
   background:white;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: auto;
   z-index: 100;
 }
 
