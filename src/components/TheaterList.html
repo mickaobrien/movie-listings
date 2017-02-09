@@ -1,3 +1,4 @@
+<div id="overlay" class="hidden" on:click='closeCurrentMovie()'></div>
 <ul>
   {{#each theaterList as theater}}
     <li class="theater">
@@ -32,7 +33,9 @@ export default {
   },
   methods: {
     setCurrentMovie( movie ) {
-      document.querySelector('body').classList.add('no-scroll');
+      document.body.classList.add('no-scroll');
+      document.querySelector('#overlay').classList.remove('hidden');
+
       this.set({'currentMovie': movie.info});
       window.onhashchange = () => {
         if (location.hash === '') {
@@ -41,11 +44,14 @@ export default {
       }
     },
     closeCurrentMovie () {
+      // Hack to prevent firing twice TODO
+      if (!this.get('currentMovie')) return;
       if (location.hash) {
         window.history.back();
       }
       this.set({'currentMovie': null});
-      document.querySelector('body').classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll');
+      document.querySelector('#overlay').classList.add('hidden');
     },
   },
   onrender () {

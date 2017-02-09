@@ -4344,7 +4344,7 @@ function renderMainFragment$3 ( root, component ) {
 	div2.appendChild( div3 );
 	var text = document.createTextNode( root.movie.title );
 	div3.appendChild( text );
-	div2.appendChild( document.createTextNode( "  \n      " ) );
+	div2.appendChild( document.createTextNode( "\n      " ) );
 	
 	var div4 = document.createElement( 'div' );
 	div4.className = "movie-details";
@@ -4687,7 +4687,9 @@ return {
   },
   methods: {
     setCurrentMovie( movie ) {
-      document.querySelector('body').classList.add('no-scroll');
+      document.body.classList.add('no-scroll');
+      document.querySelector('#overlay').classList.remove('hidden');
+
       this.set({'currentMovie': movie.info});
       window.onhashchange = () => {
         if (location.hash === '') {
@@ -4696,11 +4698,14 @@ return {
       };
     },
     closeCurrentMovie () {
+      // Hack to prevent firing twice TODO
+      if (!this.get('currentMovie')) return;
       if (location.hash) {
         window.history.back();
       }
       this.set({'currentMovie': null});
-      document.querySelector('body').classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll');
+      document.querySelector('#overlay').classList.add('hidden');
     },
   },
   onrender () {
@@ -4709,6 +4714,18 @@ return {
 }());
 
 function renderMainFragment$1 ( root, component ) {
+	var div = document.createElement( 'div' );
+	div.id = "overlay";
+	div.className = "hidden";
+	
+	function clickHandler ( event ) {
+		component.closeCurrentMovie();
+	}
+	
+	div.addEventListener( 'click', clickHandler, false );
+	
+	var text = document.createTextNode( "\n" );
+	
 	var ul = document.createElement( 'ul' );
 	
 	var eachBlock_anchor = document.createComment( "#each theaterList" );
@@ -4721,7 +4738,7 @@ function renderMainFragment$1 ( root, component ) {
 		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
 	}
 	
-	var text = document.createTextNode( "\n\n" );
+	var text1 = document.createTextNode( "\n\n" );
 	var ifBlock_anchor = document.createComment( "#if currentMovie" );
 	
 	function getBlock ( root ) {
@@ -4734,8 +4751,10 @@ function renderMainFragment$1 ( root, component ) {
 
 	return {
 		mount: function ( target, anchor ) {
-			target.insertBefore( ul, anchor );
+			target.insertBefore( div, anchor );
 			target.insertBefore( text, anchor );
+			target.insertBefore( ul, anchor );
+			target.insertBefore( text1, anchor );
 			target.insertBefore( ifBlock_anchor, anchor );
 			if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
 		},
@@ -4770,6 +4789,8 @@ function renderMainFragment$1 ( root, component ) {
 		},
 		
 		teardown: function ( detach ) {
+			div.removeEventListener( 'click', clickHandler, false );
+			
 			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
 				eachBlock_iterations[i].teardown( false );
 			}
@@ -4777,8 +4798,10 @@ function renderMainFragment$1 ( root, component ) {
 			if ( ifBlock ) ifBlock.teardown( detach );
 			
 			if ( detach ) {
-				ul.parentNode.removeChild( ul );
+				div.parentNode.removeChild( div );
 				text.parentNode.removeChild( text );
+				ul.parentNode.removeChild( ul );
+				text1.parentNode.removeChild( text1 );
 				ifBlock_anchor.parentNode.removeChild( ifBlock_anchor );
 			}
 		}
