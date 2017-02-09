@@ -1,3 +1,7 @@
+.no-scroll {
+  overflow: hidden;
+}
+
 .page-title {
   text-align: center;
   padding: 1em 0;
@@ -38,4 +42,122 @@
 .movie {
   list-style: none;
   padding: 0 1em 1em 1em;
+}
+
+#movie-container {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: scroll;
+  background:white;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  z-index: 100;
+}
+
+@media all and (min-width: 1001px) {
+  #movie-container {
+    max-width: 70%;
+    margin: 1em auto;
+  }
+}
+
+#current-movie {
+  padding: 1em;
+}
+
+.movie-header {
+  background-color: hsl(277, 84%, 55%);
+  color: #eee;
+  display: flex;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+.movie-title {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  margin: auto;
+  margin-right: 0;
+}
+
+.movie-details {
+  font-style: italic;
+  margin: auto 1em;
+  font-size: 0.8em;
+}
+
+.movie-info {
+  display: flex;
+}
+
+.movie-poster {
+  /*width: 100%;*/
+  margin-right: 1em;
+}
+
+.movie-poster img {
+  max-width: none !important;
+}
+
+.close-movie {
+  margin: auto;
+  margin-right: 0;
+  cursor: pointer;
+}
+
+.centered {
+  text-align: center;
+}
+
+.movie-description { 
+}
+
+.review {
+  font-style: italic;
+}
+
+.all-showtimes {
+  background-color: #eee;
+  padding: 0.1em 1em;
+}
+
+.score {
+  font-weight: bold;
+}
+
+.flex-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+@media all and (max-width: 550px) {
+  .movie-info {
+    display: block;
+  }
+}
+
+@media all and (max-width: 550px) {
+  .flex-grid {
+    display: block;
+  }
+}
+.flex-grid .col {
+  flex: 1;
+}
+.flex-grid .half-col {
+  width: 48%;
+}
+
+.showtime-listing {
+  margin: 1em 0;
+}
+
+.label {
+  font-weight: bold;
+  text-transform: uppercase;
 }

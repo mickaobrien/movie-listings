@@ -6,3 +6,5 @@ const listings = new Listings({
   target: document.querySelector('main'),
   data: {},
 });
+
+location.hash = '';

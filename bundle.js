@@ -1223,6 +1223,9 @@ function applyComputations$1 ( state, newState, oldState ) {
 
 var template$2 = (function () {
 return {
+  data () {
+    return {}
+  },
   computed: {
     currentMovies: (theater, movies) => {
       return theater.movies.map(function(movie) {
@@ -1236,13 +1239,6 @@ return {
     formatShowtimes: showtimes => {
       const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
       return times.join(', ')
-    }
-  },
-  methods: {
-    //TODO do all this calculation at the start? store in movie
-    showMovieInfo ( movieID ) {
-      const movie = this.get('movies')[movieID];
-      console.log(movie.theaters);
     }
   },
 };
@@ -1350,19 +1346,18 @@ function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, compone
 	div.className = '';
 	
 	li.appendChild( div );
-	div.appendChild( document.createTextNode( "\n        " ) );
 	
 	var div1 = document.createElement( 'div' );
 	
 	div.appendChild( div1 );
 	
 	var a = document.createElement( 'a' );
-	a.href = "#";
+	a.href = "#" + ( movie.id );
 	
 	function clickHandler ( event ) {
 		var eachBlock_value = this.__svelte.eachBlock_value, movie__index = this.__svelte.movie__index, movie = eachBlock_value[movie__index];
 		
-		component.showMovieInfo(movie.id);
+		component.fire( "setCurrentMovie", {movie} );
 	}
 	
 	a.addEventListener( 'click', clickHandler, false );
@@ -1373,11 +1368,11 @@ function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, compone
 	};
 	
 	div1.appendChild( a );
-	var text1 = document.createTextNode( movie.info.title );
-	a.appendChild( text1 );
+	var text = document.createTextNode( movie.info.title );
+	a.appendChild( text );
 	div1.appendChild( document.createTextNode( " (" ) );
-	var text3 = document.createTextNode( movie.info.runningTime );
-	div1.appendChild( text3 );
+	var text2 = document.createTextNode( movie.info.runningTime );
+	div1.appendChild( text2 );
 	div1.appendChild( document.createTextNode( ")" ) );
 	li.appendChild( document.createTextNode( "\n      " ) );
 	
@@ -1389,8 +1384,8 @@ function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, compone
 	var div3 = document.createElement( 'div' );
 	
 	div2.appendChild( div3 );
-	var text6 = document.createTextNode( template$2.helpers.formatShowtimes(movie.showtimes) );
-	div3.appendChild( text6 );
+	var text5 = document.createTextNode( template$2.helpers.formatShowtimes(movie.showtimes) );
+	div3.appendChild( text5 );
 
 	return {
 		mount: function ( target, anchor ) {
@@ -1400,14 +1395,16 @@ function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, compone
 		update: function ( changed, root, eachBlock_value, movie, movie__index ) {
 			var movie = eachBlock_value[movie__index];
 			
+			a.href = "#" + ( movie.id );
+			
 			a.__svelte.eachBlock_value = eachBlock_value;
 			a.__svelte.movie__index = movie__index;
 			
-			text1.data = movie.info.title;
+			text.data = movie.info.title;
 			
-			text3.data = movie.info.runningTime;
+			text2.data = movie.info.runningTime;
 			
-			text6.data = template$2.helpers.formatShowtimes(movie.showtimes);
+			text5.data = template$2.helpers.formatShowtimes(movie.showtimes);
 		},
 		
 		teardown: function ( detach ) {
@@ -1424,7 +1421,7 @@ function Theater ( options ) {
 	options = options || {};
 
 	var component = this;
-	var state = options.data || {};
+	var state = Object.assign( template$2.data(), options.data );
 applyComputations$1( state, state, {} );
 
 	var observers = {
@@ -1531,7 +1528,361 @@ applyComputations$1( state, state, {} );
 	if ( options.target ) this._mount( options.target );
 }
 
-Theater.prototype = template$2.methods;
+var template$3 = (function () {
+return {
+  helpers: {
+    formatActors: actors => {
+      const actorNames = actors.map(actor => actor.name);
+      return actorNames.join(', ');
+    },
+    formatShowtimes: showtimes => {
+      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
+      return times.join(', ')
+    }
+  },
+}}());
+
+function renderMainFragment$3 ( root, component ) {
+	var div = document.createElement( 'div' );
+	div.id = "movie-container";
+	
+	var div1 = document.createElement( 'div' );
+	div1.id = "current-movie";
+	
+	div.appendChild( div1 );
+	
+	var div2 = document.createElement( 'div' );
+	div2.className = "movie-header";
+	
+	div1.appendChild( div2 );
+	
+	var div3 = document.createElement( 'div' );
+	div3.className = "movie-title";
+	
+	div2.appendChild( div3 );
+	
+	var div4 = document.createElement( 'div' );
+	
+	div3.appendChild( div4 );
+	var text = document.createTextNode( root.movie.title );
+	div4.appendChild( text );
+	div3.appendChild( document.createTextNode( "  \n        " ) );
+	
+	var div5 = document.createElement( 'div' );
+	div5.className = "movie-details";
+	
+	div3.appendChild( div5 );
+	var text2 = document.createTextNode( root.movie.runningTime );
+	div5.appendChild( text2 );
+	div5.appendChild( document.createTextNode( " / " ) );
+	var text4 = document.createTextNode( root.movie.mpaa );
+	div5.appendChild( text4 );
+	div2.appendChild( document.createTextNode( "\n      " ) );
+	
+	var div6 = document.createElement( 'div' );
+	div6.className = "close-movie";
+	
+	function clickHandler ( event ) {
+		component.fire( "closeCurrentMovie" );
+	}
+	
+	div6.addEventListener( 'click', clickHandler, false );
+	
+	div2.appendChild( div6 );
+	div6.appendChild( document.createTextNode( "X" ) );
+	div1.appendChild( document.createTextNode( "\n    " ) );
+	
+	var div7 = document.createElement( 'div' );
+	div7.className = "movie-info";
+	
+	div1.appendChild( div7 );
+	
+	var div8 = document.createElement( 'div' );
+	div8.className = "movie-poster";
+	
+	div7.appendChild( div8 );
+	
+	var img = document.createElement( 'img' );
+	img.src = root.movie.poster.detailed;
+	
+	div8.appendChild( img );
+	div7.appendChild( document.createTextNode( "\n      " ) );
+	
+	var div9 = document.createElement( 'div' );
+	div9.className = "movie-description";
+	
+	div7.appendChild( div9 );
+	
+	var p = document.createElement( 'p' );
+	
+	div9.appendChild( p );
+	
+	var div10 = document.createElement( 'div' );
+	div10.className = "label";
+	
+	p.appendChild( div10 );
+	div10.appendChild( document.createTextNode( "Starring" ) );
+	p.appendChild( document.createTextNode( " " ) );
+	var text11 = document.createTextNode( template$3.helpers.formatActors(root.movie.actors) );
+	p.appendChild( text11 );
+	div9.appendChild( document.createTextNode( "\n        " ) );
+	
+	var p1 = document.createElement( 'p' );
+	
+	div9.appendChild( p1 );
+	p1.appendChild( document.createTextNode( "Description:" ) );
+	div9.appendChild( document.createTextNode( "\n        " ) );
+	
+	var blockquote = document.createElement( 'blockquote' );
+	
+	div9.appendChild( blockquote );
+	
+	var p2 = document.createElement( 'p' );
+	p2.className = "review";
+	
+	blockquote.appendChild( p2 );
+	var raw_before = document.createElement( 'noscript' );
+	p2.appendChild( raw_before );
+	var raw_after = document.createElement( 'noscript' );
+	p2.appendChild( raw_after );
+	raw_before.insertAdjacentHTML( 'afterend', root.movie.reviews.rottenTomatoes.consensus );
+	blockquote.appendChild( document.createTextNode( "\n          " ) );
+	
+	var footer = document.createElement( 'footer' );
+	
+	blockquote.appendChild( footer );
+	footer.appendChild( document.createTextNode( "— Rotten Tomatoes, " ) );
+	
+	var span = document.createElement( 'span' );
+	span.className = "score";
+	
+	footer.appendChild( span );
+	var text17 = document.createTextNode( root.movie.reviews.rottenTomatoes.rating );
+	span.appendChild( text17 );
+	span.appendChild( document.createTextNode( "%" ) );
+	div1.appendChild( document.createTextNode( "\n    " ) );
+	
+	var div11 = document.createElement( 'div' );
+	div11.className = "all-showtimes flex-grid";
+	
+	div1.appendChild( div11 );
+	var eachBlock_anchor = document.createComment( "#each movie.theaters" );
+	div11.appendChild( eachBlock_anchor );
+	var eachBlock_value = root.movie.theaters;
+	var eachBlock_iterations = [];
+	
+	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+		eachBlock_iterations[i] = renderEachBlock$2( root, eachBlock_value, eachBlock_value[i], i, component );
+		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+	}
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( div, anchor );
+		},
+		
+		update: function ( changed, root ) {
+			text.data = root.movie.title;
+			
+			text2.data = root.movie.runningTime;
+			
+			text4.data = root.movie.mpaa;
+			
+			img.src = root.movie.poster.detailed;
+			
+			text11.data = template$3.helpers.formatActors(root.movie.actors);
+			
+			while ( raw_before.nextSibling && raw_before.nextSibling !== raw_after ) {
+				raw_before.parentNode.removeChild( raw_before.nextSibling );
+			}
+			
+			raw_before.insertAdjacentHTML( 'afterend', root.movie.reviews.rottenTomatoes.consensus );
+			
+			text17.data = root.movie.reviews.rottenTomatoes.rating;
+			
+			var eachBlock_value = root.movie.theaters;
+			
+			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+				if ( !eachBlock_iterations[i] ) {
+					eachBlock_iterations[i] = renderEachBlock$2( root, eachBlock_value, eachBlock_value[i], i, component );
+					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+				} else {
+					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
+				}
+			}
+			
+			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( true );
+			}
+			
+			eachBlock_iterations.length = eachBlock_value.length;
+		},
+		
+		teardown: function ( detach ) {
+			div6.removeEventListener( 'click', clickHandler, false );
+			
+			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( false );
+			}
+			
+			if ( detach ) {
+				while ( raw_before.nextSibling && raw_before.nextSibling !== raw_after ) {
+					raw_before.parentNode.removeChild( raw_before.nextSibling );
+				}
+				
+				div.parentNode.removeChild( div );
+			}
+		}
+	};
+}
+
+function renderEachBlock$2 ( root, eachBlock_value, theater, theater__index, component ) {
+	var div = document.createElement( 'div' );
+	div.className = "showtime-listing half-col";
+	
+	var div1 = document.createElement( 'div' );
+	div1.className = "label";
+	
+	div.appendChild( div1 );
+	var text = document.createTextNode( theater.theater );
+	div1.appendChild( text );
+	div.appendChild( document.createTextNode( "\n        " ) );
+	
+	var div2 = document.createElement( 'div' );
+	
+	div.appendChild( div2 );
+	var text2 = document.createTextNode( template$3.helpers.formatShowtimes(theater.showtimes) );
+	div2.appendChild( text2 );
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( div, anchor );
+		},
+		
+		update: function ( changed, root, eachBlock_value, theater, theater__index ) {
+			var theater = eachBlock_value[theater__index];
+			
+			text.data = theater.theater;
+			
+			text2.data = template$3.helpers.formatShowtimes(theater.showtimes);
+		},
+		
+		teardown: function ( detach ) {
+			if ( detach ) {
+				div.parentNode.removeChild( div );
+			}
+		}
+	};
+}
+
+function Movie ( options ) {
+	options = options || {};
+
+	var component = this;
+	var state = options.data || {};
+
+	var observers = {
+		immediate: Object.create( null ),
+		deferred: Object.create( null )
+	};
+
+	var callbacks = Object.create( null );
+
+	function dispatchObservers ( group, newState, oldState ) {
+		for ( var key in group ) {
+			if ( !( key in newState ) ) continue;
+
+			var newValue = newState[ key ];
+			var oldValue = oldState[ key ];
+
+			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
+
+			var callbacks = group[ key ];
+			if ( !callbacks ) continue;
+
+			for ( var i = 0; i < callbacks.length; i += 1 ) {
+				var callback = callbacks[i];
+				if ( callback.__calling ) continue;
+
+				callback.__calling = true;
+				callback.call( component, newValue, oldValue );
+				callback.__calling = false;
+			}
+		}
+	}
+
+	this.fire = function fire ( eventName, data ) {
+		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
+		if ( !handlers ) return;
+
+		for ( var i = 0; i < handlers.length; i += 1 ) {
+			handlers[i].call( this, data );
+		}
+	};
+
+	this.get = function get ( key ) {
+		return key ? state[ key ] : state;
+	};
+
+	this.set = function set ( newState ) {
+		var oldState = state;
+		state = Object.assign( {}, oldState, newState );
+		
+		dispatchObservers( observers.immediate, newState, oldState );
+		if ( mainFragment ) mainFragment.update( newState, state );
+		dispatchObservers( observers.deferred, newState, oldState );
+	};
+
+	this._mount = function mount ( target, anchor ) {
+		mainFragment.mount( target, anchor );
+	};
+
+	this.observe = function ( key, callback, options ) {
+		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
+
+		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
+
+		if ( !options || options.init !== false ) {
+			callback.__calling = true;
+			callback.call( component, state[ key ] );
+			callback.__calling = false;
+		}
+
+		return {
+			cancel: function () {
+				var index = group[ key ].indexOf( callback );
+				if ( ~index ) group[ key ].splice( index, 1 );
+			}
+		};
+	};
+
+	this.on = function on ( eventName, handler ) {
+		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
+		handlers.push( handler );
+
+		return {
+			cancel: function () {
+				var index = handlers.indexOf( handler );
+				if ( ~index ) handlers.splice( index, 1 );
+			}
+		};
+	};
+
+	this.teardown = function teardown ( detach ) {
+		this.fire( 'teardown' );
+
+		mainFragment.teardown( detach !== false );
+		mainFragment = null;
+
+		state = {};
+	};
+
+	this.root = options.root;
+	this.yield = options.yield;
+
+	var mainFragment = renderMainFragment$3( state, this );
+	if ( options.target ) this._mount( options.target );
+}
 
 function applyComputations ( state, newState, oldState ) {
 	if ( ( 'theaters' in newState && typeof state.theaters === 'object' || state.theaters !== oldState.theaters ) ) {
@@ -1545,11 +1896,32 @@ return {
     return {}
   },
   components: {
+    Movie,
     Theater,
   },
   computed: {
     theaterList: theaters => values_1(theaters),
-  }
+  },
+  methods: {
+    setCurrentMovie( movie ) {
+      document.querySelector('body').classList.add('no-scroll');
+      this.set({'currentMovie': movie.info});
+      window.onhashchange = () => {
+        if (location.hash === '') {
+          this.closeCurrentMovie();
+        }
+      };
+    },
+    closeCurrentMovie () {
+      if (location.hash) {
+        window.history.back();
+      }
+      this.set({'currentMovie': null});
+      document.querySelector('body').classList.remove('no-scroll');
+    },
+  },
+  onrender () {
+  },
 };
 }());
 
@@ -1565,10 +1937,24 @@ function renderMainFragment$1 ( root, component ) {
 		eachBlock_iterations[i] = renderEachBlock( root, eachBlock_value, eachBlock_value[i], i, component );
 		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
 	}
+	
+	var text = document.createTextNode( "\n\n" );
+	var ifBlock_anchor = document.createComment( "#if currentMovie" );
+	
+	function getBlock ( root ) {
+		if ( root.currentMovie ) return renderIfBlock_0;
+		return null;
+	}
+	
+	var currentBlock = getBlock( root );
+	var ifBlock = currentBlock && currentBlock( root, component );
 
 	return {
 		mount: function ( target, anchor ) {
 			target.insertBefore( ul, anchor );
+			target.insertBefore( text, anchor );
+			target.insertBefore( ifBlock_anchor, anchor );
+			if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
 		},
 		
 		update: function ( changed, root ) {
@@ -1588,6 +1974,16 @@ function renderMainFragment$1 ( root, component ) {
 			}
 			
 			eachBlock_iterations.length = eachBlock_value.length;
+			
+			var _currentBlock = currentBlock;
+			currentBlock = getBlock( root );
+			if ( _currentBlock === currentBlock && ifBlock) {
+				ifBlock.update( changed, root );
+			} else {
+				if ( ifBlock ) ifBlock.teardown( true );
+				ifBlock = currentBlock && currentBlock( root, component );
+				if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
+			}
 		},
 		
 		teardown: function ( detach ) {
@@ -1595,9 +1991,46 @@ function renderMainFragment$1 ( root, component ) {
 				eachBlock_iterations[i].teardown( false );
 			}
 			
+			if ( ifBlock ) ifBlock.teardown( detach );
+			
 			if ( detach ) {
 				ul.parentNode.removeChild( ul );
+				text.parentNode.removeChild( text );
+				ifBlock_anchor.parentNode.removeChild( ifBlock_anchor );
 			}
+		}
+	};
+}
+
+function renderIfBlock_0 ( root, component ) {
+	var movie_initialData = {
+		movie: root.currentMovie
+	};
+	var movie = new template$1.components.Movie({
+		target: null,
+		root: component.root || component,
+		data: movie_initialData
+	});
+	
+	movie.on( 'closeCurrentMovie', function ( event ) {
+		component.closeCurrentMovie();
+	});
+
+	return {
+		mount: function ( target, anchor ) {
+			movie._mount( target, anchor );
+		},
+		
+		update: function ( changed, root ) {
+			var movie_changes = {};
+			
+			if ( 'currentMovie' in changed ) movie_changes.movie = root.currentMovie;
+			
+			if ( Object.keys( movie_changes ).length ) movie.set( movie_changes );
+		},
+		
+		teardown: function ( detach ) {
+			movie.teardown( detach );
 		}
 	};
 }
@@ -1615,6 +2048,10 @@ function renderEachBlock ( root, eachBlock_value, theater, theater__index, compo
 		target: li,
 		root: component.root || component,
 		data: theater1_initialData
+	});
+	
+	theater1.on( 'setCurrentMovie', function ( event ) {
+		component.setCurrentMovie( event.movie );
 	});
 
 	return {
@@ -1765,7 +2202,15 @@ applyComputations( state, state, {} );
 		var hook = this.__renderHooks.pop();
 		hook.fn.call( hook.context );
 	}
+	
+	if ( options.root ) {
+		options.root.__renderHooks.push({ fn: template$1.onrender, context: this });
+	} else {
+		template$1.onrender.call( this );
+	}
 }
+
+TheaterList.prototype = template$1.methods;
 
 function today() {
   const date = new Date();
@@ -4095,6 +4540,7 @@ return {
     return {
       theaters: [],
       movies: {},
+      currentMovie: {},
     }
   },
   onrender () {
@@ -4113,7 +4559,8 @@ return {
               //theatersShowing.push(theater.id)
               theatersShowing.push({
                 'theater': theater.name,
-                'showtimes': find_1(theater.movies, { 'id': parseInt(movieID) }).presentations
+                //TODO check time logic, maybe extract it elsewhere
+                'showtimes': find_1(theater.movies, { 'id': parseInt(movieID) }).presentations[0].traitGroups[0].performances
               });
             }
           });
@@ -4125,6 +4572,13 @@ return {
   },
   components: {
     TheaterList,
+  },
+  methods: {
+    setCurrentMovie( movie ) {
+      console.log('set');
+      this.set('currentMovie', movie);
+      console.log('goti');
+    },
   },
 };
 }());
@@ -4140,6 +4594,10 @@ function renderMainFragment ( root, component ) {
 		target: div,
 		root: component.root || component,
 		data: theaterList_initialData
+	});
+	
+	theaterList.on( 'setCurrentMovie', function ( event ) {
+		component.setCurrentMovie( event.movie );
 	});
 
 	return {
@@ -4292,6 +4750,8 @@ function Listings ( options ) {
 		template.onrender.call( this );
 	}
 }
+
+Listings.prototype = template.methods;
 
 (function(self) {
   'use strict';
@@ -4757,5 +5217,7 @@ const listings = new Listings({
   target: document.querySelector('main'),
   data: {},
 });
+
+location.hash = '';
 
 }());

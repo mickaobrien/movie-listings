@@ -6,9 +6,8 @@
   {{#each currentMovies as movie}}
     <li class="movie">
       <div class="">
-        <!--<img class="poster-listing" src="{{movie.info.poster.detailed}}"/> -->
         <div>
-          <a href="#" on:click='showMovieInfo(movie.id)'>{{movie.info.title}}</a> ({{movie.info.runningTime}})
+          <a href="#{{movie.id}}" on:click='fire( "setCurrentMovie", {movie} )'>{{movie.info.title}}</a> ({{movie.info.runningTime}})
         </div>
       </div>
       <div class="">
@@ -25,6 +24,9 @@ import { formatTimeString } from '../helpers/formatting';
 import includes from 'lodash/includes';
 
 export default {
+  data () {
+    return {}
+  },
   computed: {
     currentMovies: (theater, movies) => {
       return theater.movies.map(function(movie) {
@@ -38,13 +40,6 @@ export default {
     formatShowtimes: showtimes => {
       const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
       return times.join(', ')
-    }
-  },
-  methods: {
-    //TODO do all this calculation at the start? store in movie
-    showMovieInfo ( movieID ) {
-      const movie = this.get('movies')[movieID];
-      console.log(movie.theaters);
     }
   },
 };

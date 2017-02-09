@@ -1,5 +1,5 @@
 <div>
-  <TheaterList theaters="{{theaters}}" movies="{{movies}}" />
+  <TheaterList theaters="{{theaters}}" movies="{{movies}}" on:setCurrentMovie='setCurrentMovie( event.movie )'/>
 </div>
 
 <script>
@@ -14,6 +14,7 @@ export default {
     return {
       theaters: [],
       movies: {},
+      currentMovie: {},
     }
   },
   onrender () {
@@ -32,7 +33,8 @@ export default {
               //theatersShowing.push(theater.id)
               theatersShowing.push({
                 'theater': theater.name,
-                'showtimes': find(theater.movies, { 'id': parseInt(movieID) }).presentations
+                //TODO check time logic, maybe extract it elsewhere
+                'showtimes': find(theater.movies, { 'id': parseInt(movieID) }).presentations[0].traitGroups[0].performances
               });
             }
           });
@@ -44,6 +46,13 @@ export default {
   },
   components: {
     TheaterList,
+  },
+  methods: {
+    setCurrentMovie( movie ) {
+      console.log('set');
+      this.set('currentMovie', movie);
+      console.log('goti');
+    },
   },
 };
 </script>

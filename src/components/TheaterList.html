@@ -1,24 +1,54 @@
 <ul>
   {{#each theaterList as theater}}
     <li class="theater">
-      <Theater theater="{{theater}}" theaters="{{theaters}}" movies="{{movies}}"/>
+      <Theater theater="{{theater}}" theaters="{{theaters}}" movies="{{movies}}"
+        on:setCurrentMovie='setCurrentMovie( event.movie )'
+      />
     </li>
   {{/each}}
 </ul>
 
+{{#if currentMovie}}
+  <Movie movie="{{currentMovie}}"
+    on:closeCurrentMovie='closeCurrentMovie()'
+  />
+{{/if}}
+
 <script>
 import Theater from './Theater.html';
 import values from 'lodash/values';
+import Movie from './Movie.html';
 
 export default {
   data () {
     return {}
   },
   components: {
+    Movie,
     Theater,
   },
   computed: {
     theaterList: theaters => values(theaters),
-  }
+  },
+  methods: {
+    setCurrentMovie( movie ) {
+      document.querySelector('body').classList.add('no-scroll');
+      this.set({'currentMovie': movie.info});
+      window.onhashchange = () => {
+        if (location.hash === '') {
+          this.closeCurrentMovie();
+        }
+      }
+    },
+    closeCurrentMovie () {
+      if (location.hash) {
+        window.history.back();
+      }
+      this.set({'currentMovie': null});
+      document.querySelector('body').classList.remove('no-scroll');
+    },
+  },
+  onrender () {
+  },
 };
 </script>

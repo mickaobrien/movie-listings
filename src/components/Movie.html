@@ -1,8 +1,53 @@
-<img src="{{movie.poster.profile}}">
-<h2>{{movie.title}}</h2>
-<p>Runtime: {{movie.runningTime}}</p>
-<p>Rating: {{movie.mpaa}}</p>
-<p>Starring:</p>
-<p>Description:</p>
-<p>Showtimes:</p>
-<p>Reviews:</p>
+<div id="movie-container">
+  <div id="current-movie">
+    <div class="movie-header">
+      <div class="movie-title">
+        <div>{{movie.title}}</div>  
+        <div class="movie-details">  {{movie.runningTime}} / {{movie.mpaa}}</div>
+      </div>
+      <div class="close-movie" on:click='fire( "closeCurrentMovie" )'>X</div>
+    </div>
+    <div class="movie-info">
+      <div class="movie-poster">
+        <img src="{{movie.poster.detailed}}">
+      </div>
+      <div class="movie-description">
+        <p>
+          <div class="label">Starring</div> {{ formatActors(movie.actors) }}
+        </p>
+        <p>Description:</p>
+        <blockquote>
+          <p class="review">
+            {{{movie.reviews.rottenTomatoes.consensus}}}
+          </p>
+          <footer>— Rotten Tomatoes, <span class="score">{{movie.reviews.rottenTomatoes.rating}}%</span></footer>
+        </blockquote>
+      </div>
+    </div>
+    <div class="all-showtimes flex-grid">
+      {{#each movie.theaters as theater}}
+      <div class="showtime-listing half-col">
+        <div class="label">{{theater.theater}}</div>
+        <div>{{formatShowtimes(theater.showtimes)}}</div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</div>
+
+
+<script>
+import { formatTimeString } from '../helpers/formatting';
+
+export default {
+  helpers: {
+    formatActors: actors => {
+      const actorNames = actors.map(actor => actor.name);
+      return actorNames.join(', ');
+    },
+    formatShowtimes: showtimes => {
+      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
+      return times.join(', ')
+    }
+  },
+}
