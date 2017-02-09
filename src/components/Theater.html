@@ -2,12 +2,12 @@
   <h2 class="theater-name">{{theater.name}}</h2>
   <div class="theater-details">{{theater.address.street}}, {{theater.address.city}} - <a href="tel:{{theater.callablePhone}}">{{theater.phone}}</a></div>
 </div>
-<ul class="movie-list">
+<ul class="movie-list flex-grid">
   {{#each currentMovies as movie}}
-    <li class="movie">
+    <li class="movie half-col">
       <div class="">
         <div>
-          <a href="#{{movie.id}}" on:click='fire( "setCurrentMovie", {movie} )'>{{movie.info.title}}</a> ({{movie.info.runningTime}})
+          <a href="#{{movie.id}}" on:click='fire( "setCurrentMovie", {movie} )'>{{movie.info.title}}</a>
         </div>
       </div>
       <div class="">
@@ -22,6 +22,7 @@
 <script>
 import { formatTimeString } from '../helpers/formatting';
 import includes from 'lodash/includes';
+import sortBy from 'lodash/sortBy';
 
 export default {
   data () {
@@ -29,7 +30,8 @@ export default {
   },
   computed: {
     currentMovies: (theater, movies) => {
-      return theater.movies.map(function(movie) {
+      let sortedMovies = sortBy(theater.movies, movie => movies[movie.id].title);
+      return sortedMovies.map(function(movie) {
         movie.info = movies[movie.id];
         movie.showtimes = movie.presentations[0].traitGroups[0].performances;
         return movie;

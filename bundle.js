@@ -1215,1039 +1215,86 @@ function includes(collection, value, fromIndex, guard) {
 
 var includes_1 = includes;
 
-function applyComputations$1 ( state, newState, oldState ) {
-	if ( ( 'theater' in newState && typeof state.theater === 'object' || state.theater !== oldState.theater ) || ( 'movies' in newState && typeof state.movies === 'object' || state.movies !== oldState.movies ) ) {
-		state.currentMovies = newState.currentMovies = template$2.computed.currentMovies( state.theater, state.movies );
-	}
+/**
+ * Appends the elements of `values` to `array`.
+ *
+ * @private
+ * @param {Array} array The array to modify.
+ * @param {Array} values The values to append.
+ * @returns {Array} Returns `array`.
+ */
+function arrayPush$1(array, values) {
+  var index = -1,
+      length = values.length,
+      offset = array.length;
+
+  while (++index < length) {
+    array[offset + index] = values[index];
+  }
+  return array;
 }
 
-var template$2 = (function () {
-return {
-  data () {
-    return {}
-  },
-  computed: {
-    currentMovies: (theater, movies) => {
-      return theater.movies.map(function(movie) {
-        movie.info = movies[movie.id];
-        movie.showtimes = movie.presentations[0].traitGroups[0].performances;
-        return movie;
-      });
-    },
-  },
-  helpers: {
-    formatShowtimes: showtimes => {
-      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
-      return times.join(', ')
-    }
-  },
-};
-}());
+var _arrayPush = arrayPush$1;
 
-function renderMainFragment$2 ( root, component ) {
-	var div = document.createElement( 'div' );
-	div.className = "theater-heading";
-	
-	var h2 = document.createElement( 'h2' );
-	h2.className = "theater-name";
-	
-	div.appendChild( h2 );
-	var text = document.createTextNode( root.theater.name );
-	h2.appendChild( text );
-	div.appendChild( document.createTextNode( "\n  " ) );
-	
-	var div1 = document.createElement( 'div' );
-	div1.className = "theater-details";
-	
-	div.appendChild( div1 );
-	var text2 = document.createTextNode( root.theater.address.street );
-	div1.appendChild( text2 );
-	div1.appendChild( document.createTextNode( ", " ) );
-	var text4 = document.createTextNode( root.theater.address.city );
-	div1.appendChild( text4 );
-	div1.appendChild( document.createTextNode( " - " ) );
-	
-	var a = document.createElement( 'a' );
-	a.href = "tel:" + ( root.theater.callablePhone );
-	
-	div1.appendChild( a );
-	var text6 = document.createTextNode( root.theater.phone );
-	a.appendChild( text6 );
-	var text7 = document.createTextNode( "\n" );
-	
-	var ul = document.createElement( 'ul' );
-	ul.className = "movie-list";
-	
-	var eachBlock_anchor = document.createComment( "#each currentMovies" );
-	ul.appendChild( eachBlock_anchor );
-	var eachBlock_value = root.currentMovies;
-	var eachBlock_iterations = [];
-	
-	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
-		eachBlock_iterations[i] = renderEachBlock$1( root, eachBlock_value, eachBlock_value[i], i, component );
-		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
-	}
+var Symbol$4 = _Symbol;
+var isArguments$2 = isArguments_1;
+var isArray$3 = isArray_1;
 
-	return {
-		mount: function ( target, anchor ) {
-			target.insertBefore( div, anchor );
-			target.insertBefore( text7, anchor );
-			target.insertBefore( ul, anchor );
-		},
-		
-		update: function ( changed, root ) {
-			text.data = root.theater.name;
-			
-			text2.data = root.theater.address.street;
-			
-			text4.data = root.theater.address.city;
-			
-			a.href = "tel:" + ( root.theater.callablePhone );
-			
-			text6.data = root.theater.phone;
-			
-			var eachBlock_value = root.currentMovies;
-			
-			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
-				if ( !eachBlock_iterations[i] ) {
-					eachBlock_iterations[i] = renderEachBlock$1( root, eachBlock_value, eachBlock_value[i], i, component );
-					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
-				} else {
-					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
-				}
-			}
-			
-			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
-				eachBlock_iterations[i].teardown( true );
-			}
-			
-			eachBlock_iterations.length = eachBlock_value.length;
-		},
-		
-		teardown: function ( detach ) {
-			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
-				eachBlock_iterations[i].teardown( false );
-			}
-			
-			if ( detach ) {
-				div.parentNode.removeChild( div );
-				text7.parentNode.removeChild( text7 );
-				ul.parentNode.removeChild( ul );
-			}
-		}
-	};
+/** Built-in value references. */
+var spreadableSymbol = Symbol$4 ? Symbol$4.isConcatSpreadable : undefined;
+
+/**
+ * Checks if `value` is a flattenable `arguments` object or array.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is flattenable, else `false`.
+ */
+function isFlattenable$1(value) {
+  return isArray$3(value) || isArguments$2(value) ||
+    !!(spreadableSymbol && value && value[spreadableSymbol]);
 }
 
-function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, component ) {
-	var li = document.createElement( 'li' );
-	li.className = "movie";
-	
-	var div = document.createElement( 'div' );
-	div.className = '';
-	
-	li.appendChild( div );
-	
-	var div1 = document.createElement( 'div' );
-	
-	div.appendChild( div1 );
-	
-	var a = document.createElement( 'a' );
-	a.href = "#" + ( movie.id );
-	
-	function clickHandler ( event ) {
-		var eachBlock_value = this.__svelte.eachBlock_value, movie__index = this.__svelte.movie__index, movie = eachBlock_value[movie__index];
-		
-		component.fire( "setCurrentMovie", {movie} );
-	}
-	
-	a.addEventListener( 'click', clickHandler, false );
-	
-	a.__svelte = {
-		eachBlock_value: eachBlock_value,
-		movie__index: movie__index
-	};
-	
-	div1.appendChild( a );
-	var text = document.createTextNode( movie.info.title );
-	a.appendChild( text );
-	div1.appendChild( document.createTextNode( " (" ) );
-	var text2 = document.createTextNode( movie.info.runningTime );
-	div1.appendChild( text2 );
-	div1.appendChild( document.createTextNode( ")" ) );
-	li.appendChild( document.createTextNode( "\n      " ) );
-	
-	var div2 = document.createElement( 'div' );
-	div2.className = '';
-	
-	li.appendChild( div2 );
-	
-	var div3 = document.createElement( 'div' );
-	
-	div2.appendChild( div3 );
-	var text5 = document.createTextNode( template$2.helpers.formatShowtimes(movie.showtimes) );
-	div3.appendChild( text5 );
+var _isFlattenable = isFlattenable$1;
 
-	return {
-		mount: function ( target, anchor ) {
-			target.insertBefore( li, anchor );
-		},
-		
-		update: function ( changed, root, eachBlock_value, movie, movie__index ) {
-			var movie = eachBlock_value[movie__index];
-			
-			a.href = "#" + ( movie.id );
-			
-			a.__svelte.eachBlock_value = eachBlock_value;
-			a.__svelte.movie__index = movie__index;
-			
-			text.data = movie.info.title;
-			
-			text2.data = movie.info.runningTime;
-			
-			text5.data = template$2.helpers.formatShowtimes(movie.showtimes);
-		},
-		
-		teardown: function ( detach ) {
-			a.removeEventListener( 'click', clickHandler, false );
-			
-			if ( detach ) {
-				li.parentNode.removeChild( li );
-			}
-		}
-	};
-}
+var arrayPush = _arrayPush;
+var isFlattenable = _isFlattenable;
 
-function Theater ( options ) {
-	options = options || {};
+/**
+ * The base implementation of `_.flatten` with support for restricting flattening.
+ *
+ * @private
+ * @param {Array} array The array to flatten.
+ * @param {number} depth The maximum recursion depth.
+ * @param {boolean} [predicate=isFlattenable] The function invoked per iteration.
+ * @param {boolean} [isStrict] Restrict to values that pass `predicate` checks.
+ * @param {Array} [result=[]] The initial result value.
+ * @returns {Array} Returns the new flattened array.
+ */
+function baseFlatten$1(array, depth, predicate, isStrict, result) {
+  var index = -1,
+      length = array.length;
 
-	var component = this;
-	var state = Object.assign( template$2.data(), options.data );
-applyComputations$1( state, state, {} );
+  predicate || (predicate = isFlattenable);
+  result || (result = []);
 
-	var observers = {
-		immediate: Object.create( null ),
-		deferred: Object.create( null )
-	};
-
-	var callbacks = Object.create( null );
-
-	function dispatchObservers ( group, newState, oldState ) {
-		for ( var key in group ) {
-			if ( !( key in newState ) ) continue;
-
-			var newValue = newState[ key ];
-			var oldValue = oldState[ key ];
-
-			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
-
-			var callbacks = group[ key ];
-			if ( !callbacks ) continue;
-
-			for ( var i = 0; i < callbacks.length; i += 1 ) {
-				var callback = callbacks[i];
-				if ( callback.__calling ) continue;
-
-				callback.__calling = true;
-				callback.call( component, newValue, oldValue );
-				callback.__calling = false;
-			}
-		}
-	}
-
-	this.fire = function fire ( eventName, data ) {
-		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
-		if ( !handlers ) return;
-
-		for ( var i = 0; i < handlers.length; i += 1 ) {
-			handlers[i].call( this, data );
-		}
-	};
-
-	this.get = function get ( key ) {
-		return key ? state[ key ] : state;
-	};
-
-	this.set = function set ( newState ) {
-		var oldState = state;
-		state = Object.assign( {}, oldState, newState );
-		applyComputations$1( state, newState, oldState );
-		
-		dispatchObservers( observers.immediate, newState, oldState );
-		if ( mainFragment ) mainFragment.update( newState, state );
-		dispatchObservers( observers.deferred, newState, oldState );
-	};
-
-	this._mount = function mount ( target, anchor ) {
-		mainFragment.mount( target, anchor );
-	};
-
-	this.observe = function ( key, callback, options ) {
-		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
-
-		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
-
-		if ( !options || options.init !== false ) {
-			callback.__calling = true;
-			callback.call( component, state[ key ] );
-			callback.__calling = false;
-		}
-
-		return {
-			cancel: function () {
-				var index = group[ key ].indexOf( callback );
-				if ( ~index ) group[ key ].splice( index, 1 );
-			}
-		};
-	};
-
-	this.on = function on ( eventName, handler ) {
-		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
-		handlers.push( handler );
-
-		return {
-			cancel: function () {
-				var index = handlers.indexOf( handler );
-				if ( ~index ) handlers.splice( index, 1 );
-			}
-		};
-	};
-
-	this.teardown = function teardown ( detach ) {
-		this.fire( 'teardown' );
-
-		mainFragment.teardown( detach !== false );
-		mainFragment = null;
-
-		state = {};
-	};
-
-	this.root = options.root;
-	this.yield = options.yield;
-
-	var mainFragment = renderMainFragment$2( state, this );
-	if ( options.target ) this._mount( options.target );
-}
-
-var template$3 = (function () {
-return {
-  helpers: {
-    formatActors: actors => {
-      const actorNames = actors.map(actor => actor.name);
-      return actorNames.join(', ');
-    },
-    formatShowtimes: showtimes => {
-      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
-      return times.join(', ')
-    }
-  },
-}}());
-
-function renderMainFragment$3 ( root, component ) {
-	var div = document.createElement( 'div' );
-	div.id = "movie-container";
-	
-	var div1 = document.createElement( 'div' );
-	div1.className = "movie-header";
-	
-	div.appendChild( div1 );
-	
-	var div2 = document.createElement( 'div' );
-	div2.className = "movie-title";
-	
-	div1.appendChild( div2 );
-	
-	var div3 = document.createElement( 'div' );
-	
-	div2.appendChild( div3 );
-	var text = document.createTextNode( root.movie.title );
-	div3.appendChild( text );
-	div2.appendChild( document.createTextNode( "  \n      " ) );
-	
-	var div4 = document.createElement( 'div' );
-	div4.className = "movie-details";
-	
-	div2.appendChild( div4 );
-	var text2 = document.createTextNode( root.movie.runningTime );
-	div4.appendChild( text2 );
-	div4.appendChild( document.createTextNode( " / " ) );
-	var text4 = document.createTextNode( root.movie.mpaa );
-	div4.appendChild( text4 );
-	div1.appendChild( document.createTextNode( "\n    " ) );
-	
-	var div5 = document.createElement( 'div' );
-	div5.className = "close-movie";
-	
-	function clickHandler ( event ) {
-		component.fire( "closeCurrentMovie" );
-	}
-	
-	div5.addEventListener( 'click', clickHandler, false );
-	
-	div1.appendChild( div5 );
-	div5.appendChild( document.createTextNode( "X" ) );
-	div.appendChild( document.createTextNode( "\n  " ) );
-	
-	var div6 = document.createElement( 'div' );
-	div6.id = "current-movie";
-	
-	div.appendChild( div6 );
-	
-	var div7 = document.createElement( 'div' );
-	div7.className = "movie-info";
-	
-	div6.appendChild( div7 );
-	
-	var div8 = document.createElement( 'div' );
-	div8.className = "movie-poster";
-	
-	div7.appendChild( div8 );
-	
-	var img = document.createElement( 'img' );
-	img.src = root.movie.poster.detailed;
-	
-	div8.appendChild( img );
-	div7.appendChild( document.createTextNode( "\n      " ) );
-	
-	var div9 = document.createElement( 'div' );
-	div9.className = "movie-description";
-	
-	div7.appendChild( div9 );
-	
-	var p = document.createElement( 'p' );
-	
-	div9.appendChild( p );
-	
-	var div10 = document.createElement( 'div' );
-	div10.className = "label";
-	
-	p.appendChild( div10 );
-	div10.appendChild( document.createTextNode( "Starring" ) );
-	p.appendChild( document.createTextNode( " " ) );
-	var text11 = document.createTextNode( template$3.helpers.formatActors(root.movie.actors) );
-	p.appendChild( text11 );
-	div9.appendChild( document.createTextNode( "\n        " ) );
-	
-	var p1 = document.createElement( 'p' );
-	
-	div9.appendChild( p1 );
-	p1.appendChild( document.createTextNode( "Description:" ) );
-	div9.appendChild( document.createTextNode( "\n        " ) );
-	
-	var blockquote = document.createElement( 'blockquote' );
-	
-	div9.appendChild( blockquote );
-	
-	var p2 = document.createElement( 'p' );
-	p2.className = "review";
-	
-	blockquote.appendChild( p2 );
-	var raw_before = document.createElement( 'noscript' );
-	p2.appendChild( raw_before );
-	var raw_after = document.createElement( 'noscript' );
-	p2.appendChild( raw_after );
-	raw_before.insertAdjacentHTML( 'afterend', root.movie.reviews.rottenTomatoes.consensus );
-	blockquote.appendChild( document.createTextNode( "\n          " ) );
-	
-	var footer = document.createElement( 'footer' );
-	
-	blockquote.appendChild( footer );
-	footer.appendChild( document.createTextNode( "— Rotten Tomatoes, " ) );
-	
-	var span = document.createElement( 'span' );
-	span.className = "score";
-	
-	footer.appendChild( span );
-	var text17 = document.createTextNode( root.movie.reviews.rottenTomatoes.rating );
-	span.appendChild( text17 );
-	span.appendChild( document.createTextNode( "%" ) );
-	div6.appendChild( document.createTextNode( "\n    " ) );
-	
-	var div11 = document.createElement( 'div' );
-	div11.className = "all-showtimes flex-grid";
-	
-	div6.appendChild( div11 );
-	var eachBlock_anchor = document.createComment( "#each movie.theaters" );
-	div11.appendChild( eachBlock_anchor );
-	var eachBlock_value = root.movie.theaters;
-	var eachBlock_iterations = [];
-	
-	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
-		eachBlock_iterations[i] = renderEachBlock$2( root, eachBlock_value, eachBlock_value[i], i, component );
-		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
-	}
-
-	return {
-		mount: function ( target, anchor ) {
-			target.insertBefore( div, anchor );
-		},
-		
-		update: function ( changed, root ) {
-			text.data = root.movie.title;
-			
-			text2.data = root.movie.runningTime;
-			
-			text4.data = root.movie.mpaa;
-			
-			img.src = root.movie.poster.detailed;
-			
-			text11.data = template$3.helpers.formatActors(root.movie.actors);
-			
-			while ( raw_before.nextSibling && raw_before.nextSibling !== raw_after ) {
-				raw_before.parentNode.removeChild( raw_before.nextSibling );
-			}
-			
-			raw_before.insertAdjacentHTML( 'afterend', root.movie.reviews.rottenTomatoes.consensus );
-			
-			text17.data = root.movie.reviews.rottenTomatoes.rating;
-			
-			var eachBlock_value = root.movie.theaters;
-			
-			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
-				if ( !eachBlock_iterations[i] ) {
-					eachBlock_iterations[i] = renderEachBlock$2( root, eachBlock_value, eachBlock_value[i], i, component );
-					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
-				} else {
-					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
-				}
-			}
-			
-			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
-				eachBlock_iterations[i].teardown( true );
-			}
-			
-			eachBlock_iterations.length = eachBlock_value.length;
-		},
-		
-		teardown: function ( detach ) {
-			div5.removeEventListener( 'click', clickHandler, false );
-			
-			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
-				eachBlock_iterations[i].teardown( false );
-			}
-			
-			if ( detach ) {
-				while ( raw_before.nextSibling && raw_before.nextSibling !== raw_after ) {
-					raw_before.parentNode.removeChild( raw_before.nextSibling );
-				}
-				
-				div.parentNode.removeChild( div );
-			}
-		}
-	};
-}
-
-function renderEachBlock$2 ( root, eachBlock_value, theater, theater__index, component ) {
-	var div = document.createElement( 'div' );
-	div.className = "showtime-listing half-col";
-	
-	var div1 = document.createElement( 'div' );
-	div1.className = "label";
-	
-	div.appendChild( div1 );
-	var text = document.createTextNode( theater.theater );
-	div1.appendChild( text );
-	div.appendChild( document.createTextNode( "\n        " ) );
-	
-	var div2 = document.createElement( 'div' );
-	
-	div.appendChild( div2 );
-	var text2 = document.createTextNode( template$3.helpers.formatShowtimes(theater.showtimes) );
-	div2.appendChild( text2 );
-
-	return {
-		mount: function ( target, anchor ) {
-			target.insertBefore( div, anchor );
-		},
-		
-		update: function ( changed, root, eachBlock_value, theater, theater__index ) {
-			var theater = eachBlock_value[theater__index];
-			
-			text.data = theater.theater;
-			
-			text2.data = template$3.helpers.formatShowtimes(theater.showtimes);
-		},
-		
-		teardown: function ( detach ) {
-			if ( detach ) {
-				div.parentNode.removeChild( div );
-			}
-		}
-	};
-}
-
-function Movie ( options ) {
-	options = options || {};
-
-	var component = this;
-	var state = options.data || {};
-
-	var observers = {
-		immediate: Object.create( null ),
-		deferred: Object.create( null )
-	};
-
-	var callbacks = Object.create( null );
-
-	function dispatchObservers ( group, newState, oldState ) {
-		for ( var key in group ) {
-			if ( !( key in newState ) ) continue;
-
-			var newValue = newState[ key ];
-			var oldValue = oldState[ key ];
-
-			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
-
-			var callbacks = group[ key ];
-			if ( !callbacks ) continue;
-
-			for ( var i = 0; i < callbacks.length; i += 1 ) {
-				var callback = callbacks[i];
-				if ( callback.__calling ) continue;
-
-				callback.__calling = true;
-				callback.call( component, newValue, oldValue );
-				callback.__calling = false;
-			}
-		}
-	}
-
-	this.fire = function fire ( eventName, data ) {
-		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
-		if ( !handlers ) return;
-
-		for ( var i = 0; i < handlers.length; i += 1 ) {
-			handlers[i].call( this, data );
-		}
-	};
-
-	this.get = function get ( key ) {
-		return key ? state[ key ] : state;
-	};
-
-	this.set = function set ( newState ) {
-		var oldState = state;
-		state = Object.assign( {}, oldState, newState );
-		
-		dispatchObservers( observers.immediate, newState, oldState );
-		if ( mainFragment ) mainFragment.update( newState, state );
-		dispatchObservers( observers.deferred, newState, oldState );
-	};
-
-	this._mount = function mount ( target, anchor ) {
-		mainFragment.mount( target, anchor );
-	};
-
-	this.observe = function ( key, callback, options ) {
-		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
-
-		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
-
-		if ( !options || options.init !== false ) {
-			callback.__calling = true;
-			callback.call( component, state[ key ] );
-			callback.__calling = false;
-		}
-
-		return {
-			cancel: function () {
-				var index = group[ key ].indexOf( callback );
-				if ( ~index ) group[ key ].splice( index, 1 );
-			}
-		};
-	};
-
-	this.on = function on ( eventName, handler ) {
-		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
-		handlers.push( handler );
-
-		return {
-			cancel: function () {
-				var index = handlers.indexOf( handler );
-				if ( ~index ) handlers.splice( index, 1 );
-			}
-		};
-	};
-
-	this.teardown = function teardown ( detach ) {
-		this.fire( 'teardown' );
-
-		mainFragment.teardown( detach !== false );
-		mainFragment = null;
-
-		state = {};
-	};
-
-	this.root = options.root;
-	this.yield = options.yield;
-
-	var mainFragment = renderMainFragment$3( state, this );
-	if ( options.target ) this._mount( options.target );
-}
-
-function applyComputations ( state, newState, oldState ) {
-	if ( ( 'theaters' in newState && typeof state.theaters === 'object' || state.theaters !== oldState.theaters ) ) {
-		state.theaterList = newState.theaterList = template$1.computed.theaterList( state.theaters );
-	}
-}
-
-var template$1 = (function () {
-return {
-  data () {
-    return {}
-  },
-  components: {
-    Movie,
-    Theater,
-  },
-  computed: {
-    theaterList: theaters => values_1(theaters),
-  },
-  methods: {
-    setCurrentMovie( movie ) {
-      document.querySelector('body').classList.add('no-scroll');
-      this.set({'currentMovie': movie.info});
-      window.onhashchange = () => {
-        if (location.hash === '') {
-          this.closeCurrentMovie();
-        }
-      };
-    },
-    closeCurrentMovie () {
-      if (location.hash) {
-        window.history.back();
+  while (++index < length) {
+    var value = array[index];
+    if (depth > 0 && predicate(value)) {
+      if (depth > 1) {
+        // Recursively flatten arrays (susceptible to call stack limits).
+        baseFlatten$1(value, depth - 1, predicate, isStrict, result);
+      } else {
+        arrayPush(result, value);
       }
-      this.set({'currentMovie': null});
-      document.querySelector('body').classList.remove('no-scroll');
-    },
-  },
-  onrender () {
-  },
-};
-}());
-
-function renderMainFragment$1 ( root, component ) {
-	var ul = document.createElement( 'ul' );
-	
-	var eachBlock_anchor = document.createComment( "#each theaterList" );
-	ul.appendChild( eachBlock_anchor );
-	var eachBlock_value = root.theaterList;
-	var eachBlock_iterations = [];
-	
-	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
-		eachBlock_iterations[i] = renderEachBlock( root, eachBlock_value, eachBlock_value[i], i, component );
-		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
-	}
-	
-	var text = document.createTextNode( "\n\n" );
-	var ifBlock_anchor = document.createComment( "#if currentMovie" );
-	
-	function getBlock ( root ) {
-		if ( root.currentMovie ) return renderIfBlock_0;
-		return null;
-	}
-	
-	var currentBlock = getBlock( root );
-	var ifBlock = currentBlock && currentBlock( root, component );
-
-	return {
-		mount: function ( target, anchor ) {
-			target.insertBefore( ul, anchor );
-			target.insertBefore( text, anchor );
-			target.insertBefore( ifBlock_anchor, anchor );
-			if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
-		},
-		
-		update: function ( changed, root ) {
-			var eachBlock_value = root.theaterList;
-			
-			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
-				if ( !eachBlock_iterations[i] ) {
-					eachBlock_iterations[i] = renderEachBlock( root, eachBlock_value, eachBlock_value[i], i, component );
-					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
-				} else {
-					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
-				}
-			}
-			
-			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
-				eachBlock_iterations[i].teardown( true );
-			}
-			
-			eachBlock_iterations.length = eachBlock_value.length;
-			
-			var _currentBlock = currentBlock;
-			currentBlock = getBlock( root );
-			if ( _currentBlock === currentBlock && ifBlock) {
-				ifBlock.update( changed, root );
-			} else {
-				if ( ifBlock ) ifBlock.teardown( true );
-				ifBlock = currentBlock && currentBlock( root, component );
-				if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
-			}
-		},
-		
-		teardown: function ( detach ) {
-			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
-				eachBlock_iterations[i].teardown( false );
-			}
-			
-			if ( ifBlock ) ifBlock.teardown( detach );
-			
-			if ( detach ) {
-				ul.parentNode.removeChild( ul );
-				text.parentNode.removeChild( text );
-				ifBlock_anchor.parentNode.removeChild( ifBlock_anchor );
-			}
-		}
-	};
-}
-
-function renderIfBlock_0 ( root, component ) {
-	var movie_initialData = {
-		movie: root.currentMovie
-	};
-	var movie = new template$1.components.Movie({
-		target: null,
-		root: component.root || component,
-		data: movie_initialData
-	});
-	
-	movie.on( 'closeCurrentMovie', function ( event ) {
-		component.closeCurrentMovie();
-	});
-
-	return {
-		mount: function ( target, anchor ) {
-			movie._mount( target, anchor );
-		},
-		
-		update: function ( changed, root ) {
-			var movie_changes = {};
-			
-			if ( 'currentMovie' in changed ) movie_changes.movie = root.currentMovie;
-			
-			if ( Object.keys( movie_changes ).length ) movie.set( movie_changes );
-		},
-		
-		teardown: function ( detach ) {
-			movie.teardown( detach );
-		}
-	};
-}
-
-function renderEachBlock ( root, eachBlock_value, theater, theater__index, component ) {
-	var li = document.createElement( 'li' );
-	li.className = "theater";
-	
-	var theater1_initialData = {
-		theater: theater,
-		theaters: root.theaters,
-		movies: root.movies
-	};
-	var theater1 = new template$1.components.Theater({
-		target: li,
-		root: component.root || component,
-		data: theater1_initialData
-	});
-	
-	theater1.on( 'setCurrentMovie', function ( event ) {
-		component.setCurrentMovie( event.movie );
-	});
-
-	return {
-		mount: function ( target, anchor ) {
-			target.insertBefore( li, anchor );
-		},
-		
-		update: function ( changed, root, eachBlock_value, theater, theater__index ) {
-			var theater = eachBlock_value[theater__index];
-			
-			var theater1_changes = {};
-			
-			if ( 'theaterList' in changed ) theater1_changes.theater = theater;
-			if ( 'theaters' in changed ) theater1_changes.theaters = root.theaters;
-			if ( 'movies' in changed ) theater1_changes.movies = root.movies;
-			
-			if ( Object.keys( theater1_changes ).length ) theater1.set( theater1_changes );
-		},
-		
-		teardown: function ( detach ) {
-			theater1.teardown( false );
-			
-			if ( detach ) {
-				li.parentNode.removeChild( li );
-			}
-		}
-	};
-}
-
-function TheaterList ( options ) {
-	options = options || {};
-
-	var component = this;
-	var state = Object.assign( template$1.data(), options.data );
-applyComputations( state, state, {} );
-
-	var observers = {
-		immediate: Object.create( null ),
-		deferred: Object.create( null )
-	};
-
-	var callbacks = Object.create( null );
-
-	function dispatchObservers ( group, newState, oldState ) {
-		for ( var key in group ) {
-			if ( !( key in newState ) ) continue;
-
-			var newValue = newState[ key ];
-			var oldValue = oldState[ key ];
-
-			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
-
-			var callbacks = group[ key ];
-			if ( !callbacks ) continue;
-
-			for ( var i = 0; i < callbacks.length; i += 1 ) {
-				var callback = callbacks[i];
-				if ( callback.__calling ) continue;
-
-				callback.__calling = true;
-				callback.call( component, newValue, oldValue );
-				callback.__calling = false;
-			}
-		}
-	}
-
-	this.fire = function fire ( eventName, data ) {
-		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
-		if ( !handlers ) return;
-
-		for ( var i = 0; i < handlers.length; i += 1 ) {
-			handlers[i].call( this, data );
-		}
-	};
-
-	this.get = function get ( key ) {
-		return key ? state[ key ] : state;
-	};
-
-	this.set = function set ( newState ) {
-		var oldState = state;
-		state = Object.assign( {}, oldState, newState );
-		applyComputations( state, newState, oldState );
-		
-		dispatchObservers( observers.immediate, newState, oldState );
-		if ( mainFragment ) mainFragment.update( newState, state );
-		dispatchObservers( observers.deferred, newState, oldState );
-		
-		while ( this.__renderHooks.length ) {
-			var hook = this.__renderHooks.pop();
-			hook.fn.call( hook.context );
-		}
-	};
-
-	this._mount = function mount ( target, anchor ) {
-		mainFragment.mount( target, anchor );
-	};
-
-	this.observe = function ( key, callback, options ) {
-		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
-
-		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
-
-		if ( !options || options.init !== false ) {
-			callback.__calling = true;
-			callback.call( component, state[ key ] );
-			callback.__calling = false;
-		}
-
-		return {
-			cancel: function () {
-				var index = group[ key ].indexOf( callback );
-				if ( ~index ) group[ key ].splice( index, 1 );
-			}
-		};
-	};
-
-	this.on = function on ( eventName, handler ) {
-		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
-		handlers.push( handler );
-
-		return {
-			cancel: function () {
-				var index = handlers.indexOf( handler );
-				if ( ~index ) handlers.splice( index, 1 );
-			}
-		};
-	};
-
-	this.teardown = function teardown ( detach ) {
-		this.fire( 'teardown' );
-
-		mainFragment.teardown( detach !== false );
-		mainFragment = null;
-
-		state = {};
-	};
-
-	this.root = options.root;
-	this.yield = options.yield;
-
-	this.__renderHooks = [];
-	
-	var mainFragment = renderMainFragment$1( state, this );
-	if ( options.target ) this._mount( options.target );
-	
-	while ( this.__renderHooks.length ) {
-		var hook = this.__renderHooks.pop();
-		hook.fn.call( hook.context );
-	}
-	
-	if ( options.root ) {
-		options.root.__renderHooks.push({ fn: template$1.onrender, context: this });
-	} else {
-		template$1.onrender.call( this );
-	}
-}
-
-TheaterList.prototype = template$1.methods;
-
-function today() {
-  const date = new Date();
-  const day = pad(date.getDate());
-  const month = pad(date.getMonth() + 1);
-  const year = date.getFullYear();
-  return `${year}${month}${day}`;
-}
-
-function setQueryParams(url, params) {
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  return url;
-}
-
-function apiURL(day, lat, lng) {
-  if ( typeof day === 'undefined' ) {
-    day = today();
+    } else if (!isStrict) {
+      result[result.length] = value;
+    }
   }
-  if ( typeof lat === 'undefined' ) {
-    lat = 51.8968917;
-    lng = -8.486315699999977;
-  }
-  const url = new URL('https://api.flixster.com/api/v2/ticketing/theaters');
-  const params = {
-    showtimes: true,
-    latitude: lat,
-    longitude: lng,
-    date: day,
-    fullMovieInfo: true
-  };
-  return setQueryParams(url, params);
+  return result;
 }
 
-function getData(day, lat, lng) {
-  const url = apiURL(day, lat, lng);
-  return fetch(url).then(response => response.json());
-}
+var _baseFlatten = baseFlatten$1;
 
 /**
  * Removes all key-value entries from the list cache.
@@ -3276,7 +2323,7 @@ function setToArray$1(set) {
 
 var _setToArray = setToArray$1;
 
-var Symbol$4 = _Symbol;
+var Symbol$5 = _Symbol;
 var Uint8Array$1 = _Uint8Array;
 var eq$2 = eq_1;
 var equalArrays$2 = _equalArrays;
@@ -3302,7 +2349,7 @@ var arrayBufferTag$1 = '[object ArrayBuffer]';
 var dataViewTag$1 = '[object DataView]';
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol$4 ? Symbol$4.prototype : undefined;
+var symbolProto = Symbol$5 ? Symbol$5.prototype : undefined;
 var symbolValueOf = symbolProto ? symbolProto.valueOf : undefined;
 
 /**
@@ -3389,7 +2436,7 @@ function equalByTag$1(object, other, tag, bitmask, customizer, equalFunc, stack)
 
 var _equalByTag = equalByTag$1;
 
-var keys$3 = keys_1;
+var keys$2 = keys_1;
 
 /** Used to compose bitmasks for value comparisons. */
 var COMPARE_PARTIAL_FLAG$4 = 1;
@@ -3415,9 +2462,9 @@ var hasOwnProperty$8 = objectProto$10.hasOwnProperty;
  */
 function equalObjects$1(object, other, bitmask, customizer, equalFunc, stack) {
   var isPartial = bitmask & COMPARE_PARTIAL_FLAG$4,
-      objProps = keys$3(object),
+      objProps = keys$2(object),
       objLength = objProps.length,
-      othProps = keys$3(other),
+      othProps = keys$2(other),
       othLength = othProps.length;
 
   if (objLength != othLength && !isPartial) {
@@ -3575,7 +2622,7 @@ var equalArrays = _equalArrays;
 var equalByTag = _equalByTag;
 var equalObjects = _equalObjects;
 var getTag = _getTag;
-var isArray$4 = isArray_1;
+var isArray$5 = isArray_1;
 var isBuffer$1 = isBuffer_1;
 var isTypedArray$2 = isTypedArray_1;
 
@@ -3608,8 +2655,8 @@ var hasOwnProperty$7 = objectProto$9.hasOwnProperty;
  * @returns {boolean} Returns `true` if the objects are equivalent, else `false`.
  */
 function baseIsEqualDeep$1(object, other, bitmask, customizer, equalFunc, stack) {
-  var objIsArr = isArray$4(object),
-      othIsArr = isArray$4(other),
+  var objIsArr = isArray$5(object),
+      othIsArr = isArray$5(other),
       objTag = arrayTag$1,
       othTag = arrayTag$1;
 
@@ -3769,7 +2816,7 @@ function isStrictComparable$1(value) {
 var _isStrictComparable = isStrictComparable$1;
 
 var isStrictComparable = _isStrictComparable;
-var keys$4 = keys_1;
+var keys$3 = keys_1;
 
 /**
  * Gets the property names, values, and compare flags of `object`.
@@ -3779,7 +2826,7 @@ var keys$4 = keys_1;
  * @returns {Array} Returns the match data of `object`.
  */
 function getMatchData$1(object) {
-  var result = keys$4(object),
+  var result = keys$3(object),
       length = result.length;
 
   while (length--) {
@@ -3837,7 +2884,7 @@ function baseMatches$1(source) {
 
 var _baseMatches = baseMatches$1;
 
-var isArray$6 = isArray_1;
+var isArray$7 = isArray_1;
 var isSymbol$2 = isSymbol_1;
 
 /** Used to match property names within property paths. */
@@ -3853,7 +2900,7 @@ var reIsPlainProp = /^\w*$/;
  * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
  */
 function isKey$2(value, object) {
-  if (isArray$6(value)) {
+  if (isArray$7(value)) {
     return false;
   }
   var type = typeof value;
@@ -3997,16 +3044,16 @@ var stringToPath$1 = memoizeCapped(function(string) {
 
 var _stringToPath = stringToPath$1;
 
-var Symbol$5 = _Symbol;
-var arrayMap$2 = _arrayMap;
-var isArray$7 = isArray_1;
+var Symbol$6 = _Symbol;
+var arrayMap$3 = _arrayMap;
+var isArray$8 = isArray_1;
 var isSymbol$3 = isSymbol_1;
 
 /** Used as references for various `Number` constants. */
 var INFINITY$1 = 1 / 0;
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto$1 = Symbol$5 ? Symbol$5.prototype : undefined;
+var symbolProto$1 = Symbol$6 ? Symbol$6.prototype : undefined;
 var symbolToString = symbolProto$1 ? symbolProto$1.toString : undefined;
 
 /**
@@ -4022,9 +3069,9 @@ function baseToString$1(value) {
   if (typeof value == 'string') {
     return value;
   }
-  if (isArray$7(value)) {
+  if (isArray$8(value)) {
     // Recursively convert values (susceptible to call stack limits).
-    return arrayMap$2(value, baseToString$1) + '';
+    return arrayMap$3(value, baseToString$1) + '';
   }
   if (isSymbol$3(value)) {
     return symbolToString ? symbolToString.call(value) : '';
@@ -4064,7 +3111,7 @@ function toString$1(value) {
 
 var toString_1 = toString$1;
 
-var isArray$5 = isArray_1;
+var isArray$6 = isArray_1;
 var isKey$1 = _isKey;
 var stringToPath = _stringToPath;
 var toString = toString_1;
@@ -4078,7 +3125,7 @@ var toString = toString_1;
  * @returns {Array} Returns the cast property path array.
  */
 function castPath$1(value, object) {
-  if (isArray$5(value)) {
+  if (isArray$6(value)) {
     return value;
   }
   return isKey$1(value, object) ? [value] : stringToPath(toString(value));
@@ -4182,8 +3229,8 @@ function baseHasIn$1(object, key) {
 var _baseHasIn = baseHasIn$1;
 
 var castPath$2 = _castPath;
-var isArguments$2 = isArguments_1;
-var isArray$8 = isArray_1;
+var isArguments$3 = isArguments_1;
+var isArray$9 = isArray_1;
 var isIndex$2 = _isIndex;
 var isLength$3 = isLength_1;
 var toKey$3 = _toKey;
@@ -4216,7 +3263,7 @@ function hasPath$1(object, path, hasFunc) {
   }
   length = object == null ? 0 : object.length;
   return !!length && isLength$3(length) && isIndex$2(key, length) &&
-    (isArray$8(object) || isArguments$2(object));
+    (isArray$9(object) || isArguments$3(object));
 }
 
 var _hasPath = hasPath$1;
@@ -4306,11 +3353,11 @@ var _baseMatchesProperty = baseMatchesProperty$1;
  * console.log(_.identity(object) === object);
  * // => true
  */
-function identity$1(value) {
+function identity$2(value) {
   return value;
 }
 
-var identity_1 = identity$1;
+var identity_1 = identity$2;
 
 /**
  * The base implementation of `_.property` without support for deep paths.
@@ -4379,8 +3426,8 @@ var property_1 = property$1;
 
 var baseMatches = _baseMatches;
 var baseMatchesProperty = _baseMatchesProperty;
-var identity = identity_1;
-var isArray$3 = isArray_1;
+var identity$1 = identity_1;
+var isArray$4 = isArray_1;
 var property = property_1;
 
 /**
@@ -4397,10 +3444,10 @@ function baseIteratee$1(value) {
     return value;
   }
   if (value == null) {
-    return identity;
+    return identity$1;
   }
   if (typeof value == 'object') {
-    return isArray$3(value)
+    return isArray$4(value)
       ? baseMatchesProperty(value[0], value[1])
       : baseMatches(value);
   }
@@ -4409,9 +3456,1585 @@ function baseIteratee$1(value) {
 
 var _baseIteratee = baseIteratee$1;
 
-var baseIteratee = _baseIteratee;
+/**
+ * Creates a base function for methods like `_.forIn` and `_.forOwn`.
+ *
+ * @private
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new base function.
+ */
+function createBaseFor$1(fromRight) {
+  return function(object, iteratee, keysFunc) {
+    var index = -1,
+        iterable = Object(object),
+        props = keysFunc(object),
+        length = props.length;
+
+    while (length--) {
+      var key = props[fromRight ? length : ++index];
+      if (iteratee(iterable[key], key, iterable) === false) {
+        break;
+      }
+    }
+    return object;
+  };
+}
+
+var _createBaseFor = createBaseFor$1;
+
+var createBaseFor = _createBaseFor;
+
+/**
+ * The base implementation of `baseForOwn` which iterates over `object`
+ * properties returned by `keysFunc` and invokes `iteratee` for each property.
+ * Iteratee functions may exit iteration early by explicitly returning `false`.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @param {Function} keysFunc The function to get the keys of `object`.
+ * @returns {Object} Returns `object`.
+ */
+var baseFor$1 = createBaseFor();
+
+var _baseFor = baseFor$1;
+
+var baseFor = _baseFor;
+var keys$4 = keys_1;
+
+/**
+ * The base implementation of `_.forOwn` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Object} object The object to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Object} Returns `object`.
+ */
+function baseForOwn$1(object, iteratee) {
+  return object && baseFor(object, iteratee, keys$4);
+}
+
+var _baseForOwn = baseForOwn$1;
+
+var isArrayLike$4 = isArrayLike_1;
+
+/**
+ * Creates a `baseEach` or `baseEachRight` function.
+ *
+ * @private
+ * @param {Function} eachFunc The function to iterate over a collection.
+ * @param {boolean} [fromRight] Specify iterating from right to left.
+ * @returns {Function} Returns the new base function.
+ */
+function createBaseEach$1(eachFunc, fromRight) {
+  return function(collection, iteratee) {
+    if (collection == null) {
+      return collection;
+    }
+    if (!isArrayLike$4(collection)) {
+      return eachFunc(collection, iteratee);
+    }
+    var length = collection.length,
+        index = fromRight ? length : -1,
+        iterable = Object(collection);
+
+    while ((fromRight ? index-- : ++index < length)) {
+      if (iteratee(iterable[index], index, iterable) === false) {
+        break;
+      }
+    }
+    return collection;
+  };
+}
+
+var _createBaseEach = createBaseEach$1;
+
+var baseForOwn = _baseForOwn;
+var createBaseEach = _createBaseEach;
+
+/**
+ * The base implementation of `_.forEach` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array|Object} Returns `collection`.
+ */
+var baseEach$1 = createBaseEach(baseForOwn);
+
+var _baseEach = baseEach$1;
+
+var baseEach = _baseEach;
 var isArrayLike$3 = isArrayLike_1;
-var keys$2 = keys_1;
+
+/**
+ * The base implementation of `_.map` without support for iteratee shorthands.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function baseMap$1(collection, iteratee) {
+  var index = -1,
+      result = isArrayLike$3(collection) ? Array(collection.length) : [];
+
+  baseEach(collection, function(value, key, collection) {
+    result[++index] = iteratee(value, key, collection);
+  });
+  return result;
+}
+
+var _baseMap = baseMap$1;
+
+/**
+ * The base implementation of `_.sortBy` which uses `comparer` to define the
+ * sort order of `array` and replaces criteria objects with their corresponding
+ * values.
+ *
+ * @private
+ * @param {Array} array The array to sort.
+ * @param {Function} comparer The function to define sort order.
+ * @returns {Array} Returns `array`.
+ */
+function baseSortBy$1(array, comparer) {
+  var length = array.length;
+
+  array.sort(comparer);
+  while (length--) {
+    array[length] = array[length].value;
+  }
+  return array;
+}
+
+var _baseSortBy = baseSortBy$1;
+
+var isSymbol$5 = isSymbol_1;
+
+/**
+ * Compares values to sort them in ascending order.
+ *
+ * @private
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {number} Returns the sort order indicator for `value`.
+ */
+function compareAscending$1(value, other) {
+  if (value !== other) {
+    var valIsDefined = value !== undefined,
+        valIsNull = value === null,
+        valIsReflexive = value === value,
+        valIsSymbol = isSymbol$5(value);
+
+    var othIsDefined = other !== undefined,
+        othIsNull = other === null,
+        othIsReflexive = other === other,
+        othIsSymbol = isSymbol$5(other);
+
+    if ((!othIsNull && !othIsSymbol && !valIsSymbol && value > other) ||
+        (valIsSymbol && othIsDefined && othIsReflexive && !othIsNull && !othIsSymbol) ||
+        (valIsNull && othIsDefined && othIsReflexive) ||
+        (!valIsDefined && othIsReflexive) ||
+        !valIsReflexive) {
+      return 1;
+    }
+    if ((!valIsNull && !valIsSymbol && !othIsSymbol && value < other) ||
+        (othIsSymbol && valIsDefined && valIsReflexive && !valIsNull && !valIsSymbol) ||
+        (othIsNull && valIsDefined && valIsReflexive) ||
+        (!othIsDefined && valIsReflexive) ||
+        !othIsReflexive) {
+      return -1;
+    }
+  }
+  return 0;
+}
+
+var _compareAscending = compareAscending$1;
+
+var compareAscending = _compareAscending;
+
+/**
+ * Used by `_.orderBy` to compare multiple properties of a value to another
+ * and stable sort them.
+ *
+ * If `orders` is unspecified, all values are sorted in ascending order. Otherwise,
+ * specify an order of "desc" for descending or "asc" for ascending sort order
+ * of corresponding values.
+ *
+ * @private
+ * @param {Object} object The object to compare.
+ * @param {Object} other The other object to compare.
+ * @param {boolean[]|string[]} orders The order to sort by for each property.
+ * @returns {number} Returns the sort order indicator for `object`.
+ */
+function compareMultiple$1(object, other, orders) {
+  var index = -1,
+      objCriteria = object.criteria,
+      othCriteria = other.criteria,
+      length = objCriteria.length,
+      ordersLength = orders.length;
+
+  while (++index < length) {
+    var result = compareAscending(objCriteria[index], othCriteria[index]);
+    if (result) {
+      if (index >= ordersLength) {
+        return result;
+      }
+      var order = orders[index];
+      return result * (order == 'desc' ? -1 : 1);
+    }
+  }
+  // Fixes an `Array#sort` bug in the JS engine embedded in Adobe applications
+  // that causes it, under certain circumstances, to provide the same value for
+  // `object` and `other`. See https://github.com/jashkenas/underscore/pull/1247
+  // for more details.
+  //
+  // This also ensures a stable sort in V8 and other engines.
+  // See https://bugs.chromium.org/p/v8/issues/detail?id=90 for more details.
+  return object.index - other.index;
+}
+
+var _compareMultiple = compareMultiple$1;
+
+var arrayMap$2 = _arrayMap;
+var baseIteratee = _baseIteratee;
+var baseMap = _baseMap;
+var baseSortBy = _baseSortBy;
+var baseUnary$2 = _baseUnary;
+var compareMultiple = _compareMultiple;
+var identity = identity_1;
+
+/**
+ * The base implementation of `_.orderBy` without param guards.
+ *
+ * @private
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {Function[]|Object[]|string[]} iteratees The iteratees to sort by.
+ * @param {string[]} orders The sort orders of `iteratees`.
+ * @returns {Array} Returns the new sorted array.
+ */
+function baseOrderBy$1(collection, iteratees, orders) {
+  var index = -1;
+  iteratees = arrayMap$2(iteratees.length ? iteratees : [identity], baseUnary$2(baseIteratee));
+
+  var result = baseMap(collection, function(value, key, collection) {
+    var criteria = arrayMap$2(iteratees, function(iteratee) {
+      return iteratee(value);
+    });
+    return { 'criteria': criteria, 'index': ++index, 'value': value };
+  });
+
+  return baseSortBy(result, function(object, other) {
+    return compareMultiple(object, other, orders);
+  });
+}
+
+var _baseOrderBy = baseOrderBy$1;
+
+/**
+ * A faster alternative to `Function#apply`, this function invokes `func`
+ * with the `this` binding of `thisArg` and the arguments of `args`.
+ *
+ * @private
+ * @param {Function} func The function to invoke.
+ * @param {*} thisArg The `this` binding of `func`.
+ * @param {Array} args The arguments to invoke `func` with.
+ * @returns {*} Returns the result of `func`.
+ */
+function apply$1(func, thisArg, args) {
+  switch (args.length) {
+    case 0: return func.call(thisArg);
+    case 1: return func.call(thisArg, args[0]);
+    case 2: return func.call(thisArg, args[0], args[1]);
+    case 3: return func.call(thisArg, args[0], args[1], args[2]);
+  }
+  return func.apply(thisArg, args);
+}
+
+var _apply = apply$1;
+
+var apply = _apply;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax$1 = Math.max;
+
+/**
+ * A specialized version of `baseRest` which transforms the rest array.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @param {Function} transform The rest array transform.
+ * @returns {Function} Returns the new function.
+ */
+function overRest$1(func, start, transform) {
+  start = nativeMax$1(start === undefined ? (func.length - 1) : start, 0);
+  return function() {
+    var args = arguments,
+        index = -1,
+        length = nativeMax$1(args.length - start, 0),
+        array = Array(length);
+
+    while (++index < length) {
+      array[index] = args[start + index];
+    }
+    index = -1;
+    var otherArgs = Array(start + 1);
+    while (++index < start) {
+      otherArgs[index] = args[index];
+    }
+    otherArgs[start] = transform(array);
+    return apply(func, this, otherArgs);
+  };
+}
+
+var _overRest = overRest$1;
+
+/**
+ * Creates a function that returns `value`.
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Util
+ * @param {*} value The value to return from the new function.
+ * @returns {Function} Returns the new constant function.
+ * @example
+ *
+ * var objects = _.times(2, _.constant({ 'a': 1 }));
+ *
+ * console.log(objects);
+ * // => [{ 'a': 1 }, { 'a': 1 }]
+ *
+ * console.log(objects[0] === objects[1]);
+ * // => true
+ */
+function constant$1(value) {
+  return function() {
+    return value;
+  };
+}
+
+var constant_1 = constant$1;
+
+var getNative$7 = _getNative;
+
+var defineProperty$1 = (function() {
+  try {
+    var func = getNative$7(Object, 'defineProperty');
+    func({}, '', {});
+    return func;
+  } catch (e) {}
+}());
+
+var _defineProperty = defineProperty$1;
+
+var constant = constant_1;
+var defineProperty = _defineProperty;
+var identity$4 = identity_1;
+
+/**
+ * The base implementation of `setToString` without support for hot loop shorting.
+ *
+ * @private
+ * @param {Function} func The function to modify.
+ * @param {Function} string The `toString` result.
+ * @returns {Function} Returns `func`.
+ */
+var baseSetToString$1 = !defineProperty ? identity$4 : function(func, string) {
+  return defineProperty(func, 'toString', {
+    'configurable': true,
+    'enumerable': false,
+    'value': constant(string),
+    'writable': true
+  });
+};
+
+var _baseSetToString = baseSetToString$1;
+
+/** Used to detect hot functions by number of calls within a span of milliseconds. */
+var HOT_COUNT = 800;
+var HOT_SPAN = 16;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeNow = Date.now;
+
+/**
+ * Creates a function that'll short out and invoke `identity` instead
+ * of `func` when it's called `HOT_COUNT` or more times in `HOT_SPAN`
+ * milliseconds.
+ *
+ * @private
+ * @param {Function} func The function to restrict.
+ * @returns {Function} Returns the new shortable function.
+ */
+function shortOut$1(func) {
+  var count = 0,
+      lastCalled = 0;
+
+  return function() {
+    var stamp = nativeNow(),
+        remaining = HOT_SPAN - (stamp - lastCalled);
+
+    lastCalled = stamp;
+    if (remaining > 0) {
+      if (++count >= HOT_COUNT) {
+        return arguments[0];
+      }
+    } else {
+      count = 0;
+    }
+    return func.apply(undefined, arguments);
+  };
+}
+
+var _shortOut = shortOut$1;
+
+var baseSetToString = _baseSetToString;
+var shortOut = _shortOut;
+
+/**
+ * Sets the `toString` method of `func` to return `string`.
+ *
+ * @private
+ * @param {Function} func The function to modify.
+ * @param {Function} string The `toString` result.
+ * @returns {Function} Returns `func`.
+ */
+var setToString$1 = shortOut(baseSetToString);
+
+var _setToString = setToString$1;
+
+var identity$3 = identity_1;
+var overRest = _overRest;
+var setToString = _setToString;
+
+/**
+ * The base implementation of `_.rest` which doesn't validate or coerce arguments.
+ *
+ * @private
+ * @param {Function} func The function to apply a rest parameter to.
+ * @param {number} [start=func.length-1] The start position of the rest parameter.
+ * @returns {Function} Returns the new function.
+ */
+function baseRest$1(func, start) {
+  return setToString(overRest(func, start, identity$3), func + '');
+}
+
+var _baseRest = baseRest$1;
+
+var eq$3 = eq_1;
+var isArrayLike$5 = isArrayLike_1;
+var isIndex$3 = _isIndex;
+var isObject$6 = isObject_1;
+
+/**
+ * Checks if the given arguments are from an iteratee call.
+ *
+ * @private
+ * @param {*} value The potential iteratee value argument.
+ * @param {*} index The potential iteratee index or key argument.
+ * @param {*} object The potential iteratee object argument.
+ * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
+ *  else `false`.
+ */
+function isIterateeCall$1(value, index, object) {
+  if (!isObject$6(object)) {
+    return false;
+  }
+  var type = typeof index;
+  if (type == 'number'
+        ? (isArrayLike$5(object) && isIndex$3(index, object.length))
+        : (type == 'string' && index in object)
+      ) {
+    return eq$3(object[index], value);
+  }
+  return false;
+}
+
+var _isIterateeCall = isIterateeCall$1;
+
+var baseFlatten = _baseFlatten;
+var baseOrderBy = _baseOrderBy;
+var baseRest = _baseRest;
+var isIterateeCall = _isIterateeCall;
+
+/**
+ * Creates an array of elements, sorted in ascending order by the results of
+ * running each element in a collection thru each iteratee. This method
+ * performs a stable sort, that is, it preserves the original sort order of
+ * equal elements. The iteratees are invoked with one argument: (value).
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Collection
+ * @param {Array|Object} collection The collection to iterate over.
+ * @param {...(Function|Function[])} [iteratees=[_.identity]]
+ *  The iteratees to sort by.
+ * @returns {Array} Returns the new sorted array.
+ * @example
+ *
+ * var users = [
+ *   { 'user': 'fred',   'age': 48 },
+ *   { 'user': 'barney', 'age': 36 },
+ *   { 'user': 'fred',   'age': 40 },
+ *   { 'user': 'barney', 'age': 34 }
+ * ];
+ *
+ * _.sortBy(users, [function(o) { return o.user; }]);
+ * // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 40]]
+ *
+ * _.sortBy(users, ['user', 'age']);
+ * // => objects for [['barney', 34], ['barney', 36], ['fred', 40], ['fred', 48]]
+ */
+var sortBy = baseRest(function(collection, iteratees) {
+  if (collection == null) {
+    return [];
+  }
+  var length = iteratees.length;
+  if (length > 1 && isIterateeCall(collection, iteratees[0], iteratees[1])) {
+    iteratees = [];
+  } else if (length > 2 && isIterateeCall(iteratees[0], iteratees[1], iteratees[2])) {
+    iteratees = [iteratees[0]];
+  }
+  return baseOrderBy(collection, baseFlatten(iteratees, 1), []);
+});
+
+var sortBy_1 = sortBy;
+
+function applyComputations$1 ( state, newState, oldState ) {
+	if ( ( 'theater' in newState && typeof state.theater === 'object' || state.theater !== oldState.theater ) || ( 'movies' in newState && typeof state.movies === 'object' || state.movies !== oldState.movies ) ) {
+		state.currentMovies = newState.currentMovies = template$2.computed.currentMovies( state.theater, state.movies );
+	}
+}
+
+var template$2 = (function () {
+return {
+  data () {
+    return {}
+  },
+  computed: {
+    currentMovies: (theater, movies) => {
+      let sortedMovies = sortBy_1(theater.movies, movie => movies[movie.id].title);
+      return sortedMovies.map(function(movie) {
+        movie.info = movies[movie.id];
+        movie.showtimes = movie.presentations[0].traitGroups[0].performances;
+        return movie;
+      });
+    },
+  },
+  helpers: {
+    formatShowtimes: showtimes => {
+      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
+      return times.join(', ')
+    }
+  },
+};
+}());
+
+function renderMainFragment$2 ( root, component ) {
+	var div = document.createElement( 'div' );
+	div.className = "theater-heading";
+	
+	var h2 = document.createElement( 'h2' );
+	h2.className = "theater-name";
+	
+	div.appendChild( h2 );
+	var text = document.createTextNode( root.theater.name );
+	h2.appendChild( text );
+	div.appendChild( document.createTextNode( "\n  " ) );
+	
+	var div1 = document.createElement( 'div' );
+	div1.className = "theater-details";
+	
+	div.appendChild( div1 );
+	var text2 = document.createTextNode( root.theater.address.street );
+	div1.appendChild( text2 );
+	div1.appendChild( document.createTextNode( ", " ) );
+	var text4 = document.createTextNode( root.theater.address.city );
+	div1.appendChild( text4 );
+	div1.appendChild( document.createTextNode( " - " ) );
+	
+	var a = document.createElement( 'a' );
+	a.href = "tel:" + ( root.theater.callablePhone );
+	
+	div1.appendChild( a );
+	var text6 = document.createTextNode( root.theater.phone );
+	a.appendChild( text6 );
+	var text7 = document.createTextNode( "\n" );
+	
+	var ul = document.createElement( 'ul' );
+	ul.className = "movie-list flex-grid";
+	
+	var eachBlock_anchor = document.createComment( "#each currentMovies" );
+	ul.appendChild( eachBlock_anchor );
+	var eachBlock_value = root.currentMovies;
+	var eachBlock_iterations = [];
+	
+	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+		eachBlock_iterations[i] = renderEachBlock$1( root, eachBlock_value, eachBlock_value[i], i, component );
+		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+	}
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( div, anchor );
+			target.insertBefore( text7, anchor );
+			target.insertBefore( ul, anchor );
+		},
+		
+		update: function ( changed, root ) {
+			text.data = root.theater.name;
+			
+			text2.data = root.theater.address.street;
+			
+			text4.data = root.theater.address.city;
+			
+			a.href = "tel:" + ( root.theater.callablePhone );
+			
+			text6.data = root.theater.phone;
+			
+			var eachBlock_value = root.currentMovies;
+			
+			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+				if ( !eachBlock_iterations[i] ) {
+					eachBlock_iterations[i] = renderEachBlock$1( root, eachBlock_value, eachBlock_value[i], i, component );
+					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+				} else {
+					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
+				}
+			}
+			
+			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( true );
+			}
+			
+			eachBlock_iterations.length = eachBlock_value.length;
+		},
+		
+		teardown: function ( detach ) {
+			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( false );
+			}
+			
+			if ( detach ) {
+				div.parentNode.removeChild( div );
+				text7.parentNode.removeChild( text7 );
+				ul.parentNode.removeChild( ul );
+			}
+		}
+	};
+}
+
+function renderEachBlock$1 ( root, eachBlock_value, movie, movie__index, component ) {
+	var li = document.createElement( 'li' );
+	li.className = "movie half-col";
+	
+	var div = document.createElement( 'div' );
+	div.className = '';
+	
+	li.appendChild( div );
+	
+	var div1 = document.createElement( 'div' );
+	
+	div.appendChild( div1 );
+	
+	var a = document.createElement( 'a' );
+	a.href = "#" + ( movie.id );
+	
+	function clickHandler ( event ) {
+		var eachBlock_value = this.__svelte.eachBlock_value, movie__index = this.__svelte.movie__index, movie = eachBlock_value[movie__index];
+		
+		component.fire( "setCurrentMovie", {movie} );
+	}
+	
+	a.addEventListener( 'click', clickHandler, false );
+	
+	a.__svelte = {
+		eachBlock_value: eachBlock_value,
+		movie__index: movie__index
+	};
+	
+	div1.appendChild( a );
+	var text = document.createTextNode( movie.info.title );
+	a.appendChild( text );
+	li.appendChild( document.createTextNode( "\n      " ) );
+	
+	var div2 = document.createElement( 'div' );
+	div2.className = '';
+	
+	li.appendChild( div2 );
+	
+	var div3 = document.createElement( 'div' );
+	
+	div2.appendChild( div3 );
+	var text2 = document.createTextNode( template$2.helpers.formatShowtimes(movie.showtimes) );
+	div3.appendChild( text2 );
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( li, anchor );
+		},
+		
+		update: function ( changed, root, eachBlock_value, movie, movie__index ) {
+			var movie = eachBlock_value[movie__index];
+			
+			a.href = "#" + ( movie.id );
+			
+			a.__svelte.eachBlock_value = eachBlock_value;
+			a.__svelte.movie__index = movie__index;
+			
+			text.data = movie.info.title;
+			
+			text2.data = template$2.helpers.formatShowtimes(movie.showtimes);
+		},
+		
+		teardown: function ( detach ) {
+			a.removeEventListener( 'click', clickHandler, false );
+			
+			if ( detach ) {
+				li.parentNode.removeChild( li );
+			}
+		}
+	};
+}
+
+function Theater ( options ) {
+	options = options || {};
+
+	var component = this;
+	var state = Object.assign( template$2.data(), options.data );
+applyComputations$1( state, state, {} );
+
+	var observers = {
+		immediate: Object.create( null ),
+		deferred: Object.create( null )
+	};
+
+	var callbacks = Object.create( null );
+
+	function dispatchObservers ( group, newState, oldState ) {
+		for ( var key in group ) {
+			if ( !( key in newState ) ) continue;
+
+			var newValue = newState[ key ];
+			var oldValue = oldState[ key ];
+
+			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
+
+			var callbacks = group[ key ];
+			if ( !callbacks ) continue;
+
+			for ( var i = 0; i < callbacks.length; i += 1 ) {
+				var callback = callbacks[i];
+				if ( callback.__calling ) continue;
+
+				callback.__calling = true;
+				callback.call( component, newValue, oldValue );
+				callback.__calling = false;
+			}
+		}
+	}
+
+	this.fire = function fire ( eventName, data ) {
+		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
+		if ( !handlers ) return;
+
+		for ( var i = 0; i < handlers.length; i += 1 ) {
+			handlers[i].call( this, data );
+		}
+	};
+
+	this.get = function get ( key ) {
+		return key ? state[ key ] : state;
+	};
+
+	this.set = function set ( newState ) {
+		var oldState = state;
+		state = Object.assign( {}, oldState, newState );
+		applyComputations$1( state, newState, oldState );
+		
+		dispatchObservers( observers.immediate, newState, oldState );
+		if ( mainFragment ) mainFragment.update( newState, state );
+		dispatchObservers( observers.deferred, newState, oldState );
+	};
+
+	this._mount = function mount ( target, anchor ) {
+		mainFragment.mount( target, anchor );
+	};
+
+	this.observe = function ( key, callback, options ) {
+		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
+
+		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
+
+		if ( !options || options.init !== false ) {
+			callback.__calling = true;
+			callback.call( component, state[ key ] );
+			callback.__calling = false;
+		}
+
+		return {
+			cancel: function () {
+				var index = group[ key ].indexOf( callback );
+				if ( ~index ) group[ key ].splice( index, 1 );
+			}
+		};
+	};
+
+	this.on = function on ( eventName, handler ) {
+		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
+		handlers.push( handler );
+
+		return {
+			cancel: function () {
+				var index = handlers.indexOf( handler );
+				if ( ~index ) handlers.splice( index, 1 );
+			}
+		};
+	};
+
+	this.teardown = function teardown ( detach ) {
+		this.fire( 'teardown' );
+
+		mainFragment.teardown( detach !== false );
+		mainFragment = null;
+
+		state = {};
+	};
+
+	this.root = options.root;
+	this.yield = options.yield;
+
+	var mainFragment = renderMainFragment$2( state, this );
+	if ( options.target ) this._mount( options.target );
+}
+
+var template$3 = (function () {
+return {
+  helpers: {
+    formatActors: actors => {
+      const actorNames = actors.map(actor => actor.name);
+      return actorNames.join(', ');
+    },
+    formatShowtimes: showtimes => {
+      const times = showtimes.map(showtime => formatTimeString(showtime.isoDate));
+      return times.join(', ')
+    }
+  },
+}}());
+
+function renderMainFragment$3 ( root, component ) {
+	var div = document.createElement( 'div' );
+	div.id = "movie-container";
+	
+	var div1 = document.createElement( 'div' );
+	div1.className = "movie-header";
+	
+	div.appendChild( div1 );
+	
+	var div2 = document.createElement( 'div' );
+	div2.className = "movie-title";
+	
+	div1.appendChild( div2 );
+	
+	var div3 = document.createElement( 'div' );
+	
+	div2.appendChild( div3 );
+	var text = document.createTextNode( root.movie.title );
+	div3.appendChild( text );
+	div2.appendChild( document.createTextNode( "  \n      " ) );
+	
+	var div4 = document.createElement( 'div' );
+	div4.className = "movie-details";
+	
+	div2.appendChild( div4 );
+	var text2 = document.createTextNode( root.movie.runningTime );
+	div4.appendChild( text2 );
+	div4.appendChild( document.createTextNode( " / " ) );
+	var text4 = document.createTextNode( root.movie.mpaa );
+	div4.appendChild( text4 );
+	div1.appendChild( document.createTextNode( "\n    " ) );
+	
+	var div5 = document.createElement( 'div' );
+	div5.className = "close-movie";
+	
+	function clickHandler ( event ) {
+		component.fire( "closeCurrentMovie" );
+	}
+	
+	div5.addEventListener( 'click', clickHandler, false );
+	
+	div1.appendChild( div5 );
+	div5.appendChild( document.createTextNode( "X" ) );
+	div.appendChild( document.createTextNode( "\n  " ) );
+	
+	var div6 = document.createElement( 'div' );
+	div6.id = "current-movie";
+	
+	div.appendChild( div6 );
+	
+	var div7 = document.createElement( 'div' );
+	div7.className = "movie-info";
+	
+	div6.appendChild( div7 );
+	
+	var div8 = document.createElement( 'div' );
+	div8.className = "movie-poster";
+	
+	div7.appendChild( div8 );
+	
+	var img = document.createElement( 'img' );
+	img.src = root.movie.poster.detailed;
+	
+	div8.appendChild( img );
+	div7.appendChild( document.createTextNode( "\n      " ) );
+	
+	var div9 = document.createElement( 'div' );
+	div9.className = "movie-description";
+	
+	div7.appendChild( div9 );
+	
+	var p = document.createElement( 'p' );
+	
+	div9.appendChild( p );
+	
+	var div10 = document.createElement( 'div' );
+	div10.className = "label";
+	
+	p.appendChild( div10 );
+	div10.appendChild( document.createTextNode( "Starring" ) );
+	p.appendChild( document.createTextNode( " " ) );
+	var text11 = document.createTextNode( template$3.helpers.formatActors(root.movie.actors) );
+	p.appendChild( text11 );
+	div9.appendChild( document.createTextNode( "\n        " ) );
+	
+	var p1 = document.createElement( 'p' );
+	
+	div9.appendChild( p1 );
+	p1.appendChild( document.createTextNode( "Description:" ) );
+	div9.appendChild( document.createTextNode( "\n        " ) );
+	
+	var blockquote = document.createElement( 'blockquote' );
+	
+	div9.appendChild( blockquote );
+	
+	var p2 = document.createElement( 'p' );
+	p2.className = "review";
+	
+	blockquote.appendChild( p2 );
+	var raw_before = document.createElement( 'noscript' );
+	p2.appendChild( raw_before );
+	var raw_after = document.createElement( 'noscript' );
+	p2.appendChild( raw_after );
+	raw_before.insertAdjacentHTML( 'afterend', root.movie.reviews.rottenTomatoes.consensus );
+	blockquote.appendChild( document.createTextNode( "\n          " ) );
+	
+	var footer = document.createElement( 'footer' );
+	
+	blockquote.appendChild( footer );
+	footer.appendChild( document.createTextNode( "— Rotten Tomatoes, " ) );
+	
+	var span = document.createElement( 'span' );
+	span.className = "score";
+	
+	footer.appendChild( span );
+	var text17 = document.createTextNode( root.movie.reviews.rottenTomatoes.rating );
+	span.appendChild( text17 );
+	span.appendChild( document.createTextNode( "%" ) );
+	div6.appendChild( document.createTextNode( "\n    " ) );
+	
+	var div11 = document.createElement( 'div' );
+	div11.className = "all-showtimes flex-grid";
+	
+	div6.appendChild( div11 );
+	var eachBlock_anchor = document.createComment( "#each movie.theaters" );
+	div11.appendChild( eachBlock_anchor );
+	var eachBlock_value = root.movie.theaters;
+	var eachBlock_iterations = [];
+	
+	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+		eachBlock_iterations[i] = renderEachBlock$2( root, eachBlock_value, eachBlock_value[i], i, component );
+		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+	}
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( div, anchor );
+		},
+		
+		update: function ( changed, root ) {
+			text.data = root.movie.title;
+			
+			text2.data = root.movie.runningTime;
+			
+			text4.data = root.movie.mpaa;
+			
+			img.src = root.movie.poster.detailed;
+			
+			text11.data = template$3.helpers.formatActors(root.movie.actors);
+			
+			while ( raw_before.nextSibling && raw_before.nextSibling !== raw_after ) {
+				raw_before.parentNode.removeChild( raw_before.nextSibling );
+			}
+			
+			raw_before.insertAdjacentHTML( 'afterend', root.movie.reviews.rottenTomatoes.consensus );
+			
+			text17.data = root.movie.reviews.rottenTomatoes.rating;
+			
+			var eachBlock_value = root.movie.theaters;
+			
+			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+				if ( !eachBlock_iterations[i] ) {
+					eachBlock_iterations[i] = renderEachBlock$2( root, eachBlock_value, eachBlock_value[i], i, component );
+					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+				} else {
+					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
+				}
+			}
+			
+			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( true );
+			}
+			
+			eachBlock_iterations.length = eachBlock_value.length;
+		},
+		
+		teardown: function ( detach ) {
+			div5.removeEventListener( 'click', clickHandler, false );
+			
+			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( false );
+			}
+			
+			if ( detach ) {
+				while ( raw_before.nextSibling && raw_before.nextSibling !== raw_after ) {
+					raw_before.parentNode.removeChild( raw_before.nextSibling );
+				}
+				
+				div.parentNode.removeChild( div );
+			}
+		}
+	};
+}
+
+function renderEachBlock$2 ( root, eachBlock_value, theater, theater__index, component ) {
+	var div = document.createElement( 'div' );
+	div.className = "showtime-listing half-col";
+	
+	var div1 = document.createElement( 'div' );
+	div1.className = "label";
+	
+	div.appendChild( div1 );
+	var text = document.createTextNode( theater.theater );
+	div1.appendChild( text );
+	div.appendChild( document.createTextNode( "\n        " ) );
+	
+	var div2 = document.createElement( 'div' );
+	
+	div.appendChild( div2 );
+	var text2 = document.createTextNode( template$3.helpers.formatShowtimes(theater.showtimes) );
+	div2.appendChild( text2 );
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( div, anchor );
+		},
+		
+		update: function ( changed, root, eachBlock_value, theater, theater__index ) {
+			var theater = eachBlock_value[theater__index];
+			
+			text.data = theater.theater;
+			
+			text2.data = template$3.helpers.formatShowtimes(theater.showtimes);
+		},
+		
+		teardown: function ( detach ) {
+			if ( detach ) {
+				div.parentNode.removeChild( div );
+			}
+		}
+	};
+}
+
+function Movie ( options ) {
+	options = options || {};
+
+	var component = this;
+	var state = options.data || {};
+
+	var observers = {
+		immediate: Object.create( null ),
+		deferred: Object.create( null )
+	};
+
+	var callbacks = Object.create( null );
+
+	function dispatchObservers ( group, newState, oldState ) {
+		for ( var key in group ) {
+			if ( !( key in newState ) ) continue;
+
+			var newValue = newState[ key ];
+			var oldValue = oldState[ key ];
+
+			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
+
+			var callbacks = group[ key ];
+			if ( !callbacks ) continue;
+
+			for ( var i = 0; i < callbacks.length; i += 1 ) {
+				var callback = callbacks[i];
+				if ( callback.__calling ) continue;
+
+				callback.__calling = true;
+				callback.call( component, newValue, oldValue );
+				callback.__calling = false;
+			}
+		}
+	}
+
+	this.fire = function fire ( eventName, data ) {
+		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
+		if ( !handlers ) return;
+
+		for ( var i = 0; i < handlers.length; i += 1 ) {
+			handlers[i].call( this, data );
+		}
+	};
+
+	this.get = function get ( key ) {
+		return key ? state[ key ] : state;
+	};
+
+	this.set = function set ( newState ) {
+		var oldState = state;
+		state = Object.assign( {}, oldState, newState );
+		
+		dispatchObservers( observers.immediate, newState, oldState );
+		if ( mainFragment ) mainFragment.update( newState, state );
+		dispatchObservers( observers.deferred, newState, oldState );
+	};
+
+	this._mount = function mount ( target, anchor ) {
+		mainFragment.mount( target, anchor );
+	};
+
+	this.observe = function ( key, callback, options ) {
+		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
+
+		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
+
+		if ( !options || options.init !== false ) {
+			callback.__calling = true;
+			callback.call( component, state[ key ] );
+			callback.__calling = false;
+		}
+
+		return {
+			cancel: function () {
+				var index = group[ key ].indexOf( callback );
+				if ( ~index ) group[ key ].splice( index, 1 );
+			}
+		};
+	};
+
+	this.on = function on ( eventName, handler ) {
+		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
+		handlers.push( handler );
+
+		return {
+			cancel: function () {
+				var index = handlers.indexOf( handler );
+				if ( ~index ) handlers.splice( index, 1 );
+			}
+		};
+	};
+
+	this.teardown = function teardown ( detach ) {
+		this.fire( 'teardown' );
+
+		mainFragment.teardown( detach !== false );
+		mainFragment = null;
+
+		state = {};
+	};
+
+	this.root = options.root;
+	this.yield = options.yield;
+
+	var mainFragment = renderMainFragment$3( state, this );
+	if ( options.target ) this._mount( options.target );
+}
+
+function applyComputations ( state, newState, oldState ) {
+	if ( ( 'theaters' in newState && typeof state.theaters === 'object' || state.theaters !== oldState.theaters ) ) {
+		state.theaterList = newState.theaterList = template$1.computed.theaterList( state.theaters );
+	}
+}
+
+var template$1 = (function () {
+return {
+  data () {
+    return {}
+  },
+  components: {
+    Movie,
+    Theater,
+  },
+  computed: {
+    theaterList: theaters => values_1(theaters),
+  },
+  methods: {
+    setCurrentMovie( movie ) {
+      document.querySelector('body').classList.add('no-scroll');
+      this.set({'currentMovie': movie.info});
+      window.onhashchange = () => {
+        if (location.hash === '') {
+          this.closeCurrentMovie();
+        }
+      };
+    },
+    closeCurrentMovie () {
+      if (location.hash) {
+        window.history.back();
+      }
+      this.set({'currentMovie': null});
+      document.querySelector('body').classList.remove('no-scroll');
+    },
+  },
+  onrender () {
+  },
+};
+}());
+
+function renderMainFragment$1 ( root, component ) {
+	var ul = document.createElement( 'ul' );
+	
+	var eachBlock_anchor = document.createComment( "#each theaterList" );
+	ul.appendChild( eachBlock_anchor );
+	var eachBlock_value = root.theaterList;
+	var eachBlock_iterations = [];
+	
+	for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+		eachBlock_iterations[i] = renderEachBlock( root, eachBlock_value, eachBlock_value[i], i, component );
+		eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+	}
+	
+	var text = document.createTextNode( "\n\n" );
+	var ifBlock_anchor = document.createComment( "#if currentMovie" );
+	
+	function getBlock ( root ) {
+		if ( root.currentMovie ) return renderIfBlock_0;
+		return null;
+	}
+	
+	var currentBlock = getBlock( root );
+	var ifBlock = currentBlock && currentBlock( root, component );
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( ul, anchor );
+			target.insertBefore( text, anchor );
+			target.insertBefore( ifBlock_anchor, anchor );
+			if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
+		},
+		
+		update: function ( changed, root ) {
+			var eachBlock_value = root.theaterList;
+			
+			for ( var i = 0; i < eachBlock_value.length; i += 1 ) {
+				if ( !eachBlock_iterations[i] ) {
+					eachBlock_iterations[i] = renderEachBlock( root, eachBlock_value, eachBlock_value[i], i, component );
+					eachBlock_iterations[i].mount( eachBlock_anchor.parentNode, eachBlock_anchor );
+				} else {
+					eachBlock_iterations[i].update( changed, root, eachBlock_value, eachBlock_value[i], i );
+				}
+			}
+			
+			for ( var i = eachBlock_value.length; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( true );
+			}
+			
+			eachBlock_iterations.length = eachBlock_value.length;
+			
+			var _currentBlock = currentBlock;
+			currentBlock = getBlock( root );
+			if ( _currentBlock === currentBlock && ifBlock) {
+				ifBlock.update( changed, root );
+			} else {
+				if ( ifBlock ) ifBlock.teardown( true );
+				ifBlock = currentBlock && currentBlock( root, component );
+				if ( ifBlock ) ifBlock.mount( ifBlock_anchor.parentNode, ifBlock_anchor );
+			}
+		},
+		
+		teardown: function ( detach ) {
+			for ( var i = 0; i < eachBlock_iterations.length; i += 1 ) {
+				eachBlock_iterations[i].teardown( false );
+			}
+			
+			if ( ifBlock ) ifBlock.teardown( detach );
+			
+			if ( detach ) {
+				ul.parentNode.removeChild( ul );
+				text.parentNode.removeChild( text );
+				ifBlock_anchor.parentNode.removeChild( ifBlock_anchor );
+			}
+		}
+	};
+}
+
+function renderIfBlock_0 ( root, component ) {
+	var movie_initialData = {
+		movie: root.currentMovie
+	};
+	var movie = new template$1.components.Movie({
+		target: null,
+		root: component.root || component,
+		data: movie_initialData
+	});
+	
+	movie.on( 'closeCurrentMovie', function ( event ) {
+		component.closeCurrentMovie();
+	});
+
+	return {
+		mount: function ( target, anchor ) {
+			movie._mount( target, anchor );
+		},
+		
+		update: function ( changed, root ) {
+			var movie_changes = {};
+			
+			if ( 'currentMovie' in changed ) movie_changes.movie = root.currentMovie;
+			
+			if ( Object.keys( movie_changes ).length ) movie.set( movie_changes );
+		},
+		
+		teardown: function ( detach ) {
+			movie.teardown( detach );
+		}
+	};
+}
+
+function renderEachBlock ( root, eachBlock_value, theater, theater__index, component ) {
+	var li = document.createElement( 'li' );
+	li.className = "theater";
+	
+	var theater1_initialData = {
+		theater: theater,
+		theaters: root.theaters,
+		movies: root.movies
+	};
+	var theater1 = new template$1.components.Theater({
+		target: li,
+		root: component.root || component,
+		data: theater1_initialData
+	});
+	
+	theater1.on( 'setCurrentMovie', function ( event ) {
+		component.setCurrentMovie( event.movie );
+	});
+
+	return {
+		mount: function ( target, anchor ) {
+			target.insertBefore( li, anchor );
+		},
+		
+		update: function ( changed, root, eachBlock_value, theater, theater__index ) {
+			var theater = eachBlock_value[theater__index];
+			
+			var theater1_changes = {};
+			
+			if ( 'theaterList' in changed ) theater1_changes.theater = theater;
+			if ( 'theaters' in changed ) theater1_changes.theaters = root.theaters;
+			if ( 'movies' in changed ) theater1_changes.movies = root.movies;
+			
+			if ( Object.keys( theater1_changes ).length ) theater1.set( theater1_changes );
+		},
+		
+		teardown: function ( detach ) {
+			theater1.teardown( false );
+			
+			if ( detach ) {
+				li.parentNode.removeChild( li );
+			}
+		}
+	};
+}
+
+function TheaterList ( options ) {
+	options = options || {};
+
+	var component = this;
+	var state = Object.assign( template$1.data(), options.data );
+applyComputations( state, state, {} );
+
+	var observers = {
+		immediate: Object.create( null ),
+		deferred: Object.create( null )
+	};
+
+	var callbacks = Object.create( null );
+
+	function dispatchObservers ( group, newState, oldState ) {
+		for ( var key in group ) {
+			if ( !( key in newState ) ) continue;
+
+			var newValue = newState[ key ];
+			var oldValue = oldState[ key ];
+
+			if ( newValue === oldValue && typeof newValue !== 'object' ) continue;
+
+			var callbacks = group[ key ];
+			if ( !callbacks ) continue;
+
+			for ( var i = 0; i < callbacks.length; i += 1 ) {
+				var callback = callbacks[i];
+				if ( callback.__calling ) continue;
+
+				callback.__calling = true;
+				callback.call( component, newValue, oldValue );
+				callback.__calling = false;
+			}
+		}
+	}
+
+	this.fire = function fire ( eventName, data ) {
+		var handlers = eventName in callbacks && callbacks[ eventName ].slice();
+		if ( !handlers ) return;
+
+		for ( var i = 0; i < handlers.length; i += 1 ) {
+			handlers[i].call( this, data );
+		}
+	};
+
+	this.get = function get ( key ) {
+		return key ? state[ key ] : state;
+	};
+
+	this.set = function set ( newState ) {
+		var oldState = state;
+		state = Object.assign( {}, oldState, newState );
+		applyComputations( state, newState, oldState );
+		
+		dispatchObservers( observers.immediate, newState, oldState );
+		if ( mainFragment ) mainFragment.update( newState, state );
+		dispatchObservers( observers.deferred, newState, oldState );
+		
+		while ( this.__renderHooks.length ) {
+			var hook = this.__renderHooks.pop();
+			hook.fn.call( hook.context );
+		}
+	};
+
+	this._mount = function mount ( target, anchor ) {
+		mainFragment.mount( target, anchor );
+	};
+
+	this.observe = function ( key, callback, options ) {
+		var group = ( options && options.defer ) ? observers.deferred : observers.immediate;
+
+		( group[ key ] || ( group[ key ] = [] ) ).push( callback );
+
+		if ( !options || options.init !== false ) {
+			callback.__calling = true;
+			callback.call( component, state[ key ] );
+			callback.__calling = false;
+		}
+
+		return {
+			cancel: function () {
+				var index = group[ key ].indexOf( callback );
+				if ( ~index ) group[ key ].splice( index, 1 );
+			}
+		};
+	};
+
+	this.on = function on ( eventName, handler ) {
+		var handlers = callbacks[ eventName ] || ( callbacks[ eventName ] = [] );
+		handlers.push( handler );
+
+		return {
+			cancel: function () {
+				var index = handlers.indexOf( handler );
+				if ( ~index ) handlers.splice( index, 1 );
+			}
+		};
+	};
+
+	this.teardown = function teardown ( detach ) {
+		this.fire( 'teardown' );
+
+		mainFragment.teardown( detach !== false );
+		mainFragment = null;
+
+		state = {};
+	};
+
+	this.root = options.root;
+	this.yield = options.yield;
+
+	this.__renderHooks = [];
+	
+	var mainFragment = renderMainFragment$1( state, this );
+	if ( options.target ) this._mount( options.target );
+	
+	while ( this.__renderHooks.length ) {
+		var hook = this.__renderHooks.pop();
+		hook.fn.call( hook.context );
+	}
+	
+	if ( options.root ) {
+		options.root.__renderHooks.push({ fn: template$1.onrender, context: this });
+	} else {
+		template$1.onrender.call( this );
+	}
+}
+
+TheaterList.prototype = template$1.methods;
+
+function today() {
+  const date = new Date();
+  const day = pad(date.getDate());
+  const month = pad(date.getMonth() + 1);
+  const year = date.getFullYear();
+  return `${year}${month}${day}`;
+}
+
+function setQueryParams(url, params) {
+  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+  return url;
+}
+
+function apiURL(day, lat, lng) {
+  if ( typeof day === 'undefined' ) {
+    day = today();
+  }
+  if ( typeof lat === 'undefined' ) {
+    lat = 51.8968917;
+    lng = -8.486315699999977;
+  }
+  const url = new URL('https://api.flixster.com/api/v2/ticketing/theaters');
+  const params = {
+    showtimes: true,
+    latitude: lat,
+    longitude: lng,
+    date: day,
+    fullMovieInfo: true
+  };
+  return setQueryParams(url, params);
+}
+
+function getData(day, lat, lng) {
+  const url = apiURL(day, lat, lng);
+  return fetch(url).then(response => response.json());
+}
+
+var baseIteratee$2 = _baseIteratee;
+var isArrayLike$6 = isArrayLike_1;
+var keys$5 = keys_1;
 
 /**
  * Creates a `_.find` or `_.findLast` function.
@@ -4423,9 +5046,9 @@ var keys$2 = keys_1;
 function createFind$1(findIndexFunc) {
   return function(collection, predicate, fromIndex) {
     var iterable = Object(collection);
-    if (!isArrayLike$3(collection)) {
-      var iteratee = baseIteratee(predicate, 3);
-      collection = keys$2(collection);
+    if (!isArrayLike$6(collection)) {
+      var iteratee = baseIteratee$2(predicate, 3);
+      collection = keys$5(collection);
       predicate = function(key) { return iteratee(iterable[key], key, iterable); };
     }
     var index = findIndexFunc(collection, predicate, fromIndex);
@@ -4436,11 +5059,11 @@ function createFind$1(findIndexFunc) {
 var _createFind = createFind$1;
 
 var baseFindIndex$2 = _baseFindIndex;
-var baseIteratee$2 = _baseIteratee;
+var baseIteratee$3 = _baseIteratee;
 var toInteger$2 = toInteger_1;
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
-var nativeMax$1 = Math.max;
+var nativeMax$2 = Math.max;
 
 /**
  * This method is like `_.find` except that it returns the index of the first
@@ -4484,9 +5107,9 @@ function findIndex$1(array, predicate, fromIndex) {
   }
   var index = fromIndex == null ? 0 : toInteger$2(fromIndex);
   if (index < 0) {
-    index = nativeMax$1(length + index, 0);
+    index = nativeMax$2(length + index, 0);
   }
-  return baseFindIndex$2(array, baseIteratee$2(predicate, 3), index);
+  return baseFindIndex$2(array, baseIteratee$3(predicate, 3), index);
 }
 
 var findIndex_1 = findIndex$1;
