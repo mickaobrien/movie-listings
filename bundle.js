@@ -1,6 +1,12 @@
 (function () {
 'use strict';
 
+function parseDateString(dateString) {
+  let timeComponents = dateString.split(/[: T-]/).map(parseFloat);
+  timeComponents[1] -= 1;
+  return new Date(...timeComponents);
+}
+
 function pad(number) {
   const num = number.toString();
   if (num.length < 2) {
@@ -8,8 +14,8 @@ function pad(number) {
   }
   return num;
 }
-function formatTimeString(timeString) {
-  const date = new Date(timeString);
+function formatTimeString(dateString) {
+  const date = parseDateString(dateString);
   const hours = date.getUTCHours();
   const minutes = date.getUTCMinutes();
   return `${pad(hours)}:${pad(minutes)}`;
@@ -5050,9 +5056,51 @@ function apiURL(day, lat, lng) {
   return setQueryParams(url, params);
 }
 
-function getData(day, lat, lng) {
-  const url = apiURL(day, lat, lng);
+function getData(location, day) {
+  const url = apiURL(day, location.lat, location.lng);
   return fetch(url).then(response => response.json());
+}
+
+function getPosition(settings) {
+  return new Promise(function(resolve, reject) {
+    navigator.geolocation.getCurrentPosition(
+      // On Success
+      function(position) {
+        resolve(position);
+      },
+      // On Error
+      function(error) {
+        reject(error);
+      },
+      settings
+    );
+  });
+}
+
+function getDeviceLocation() {
+  //TODO handle denial of permission, errors
+  return getPosition().then(position => {
+    const location = {lat: position.coords.latitude, lng: position.coords.longitude};
+    saveLocation(location);
+    return location;
+  })
+}
+
+function saveLocation(location) {
+  let locations = JSON.parse(localStorage.locations || '[]');
+  locations.push(location);
+  localStorage.locations = JSON.stringify(locations);
+}
+
+function getLocation() {
+  // Previously stored locations
+  if (localStorage.locations) {
+    return new Promise((resolve, reject) => {
+      resolve(JSON.parse(localStorage.locations)[0]);
+    });
+  }
+  // Request location from the device
+  return getDeviceLocation();
 }
 
 var baseIteratee$2 = _baseIteratee;
@@ -5191,9 +5239,11 @@ return {
   },
   onrender () {
     const self = this;
-    getData()
-      .then(function(json) { 
+    getLocation()
+      .then(getData)
+      .then(function(json) {
         // let theaters = values(json.theaters);
+        //TODO tidy this all up into helper methods or something
         let theaters = json.theaters;
         let movies = json.movies;
 
