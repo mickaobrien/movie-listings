@@ -5,6 +5,7 @@
 <script>
 import TheaterList from './TheaterList.html';
 import getData from '../helpers/requests';
+import getLocation from '../helpers/location';
 import find from 'lodash/find';
 import includes from 'lodash/includes';
 import values from 'lodash/values';
@@ -19,9 +20,11 @@ export default {
   },
   onrender () {
     const self = this;
-    getData()
-      .then(function(json) { 
+    getLocation()
+      .then(getData)
+      .then(function(json) {
         // let theaters = values(json.theaters);
+        //TODO tidy this all up into helper methods or something
         let theaters = json.theaters;
         let movies = json.movies;
 

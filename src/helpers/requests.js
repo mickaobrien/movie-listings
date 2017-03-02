@@ -32,7 +32,7 @@ function apiURL(day, lat, lng) {
   return setQueryParams(url, params);
 }
 
-export default function getData(day, lat, lng) {
-  const url = apiURL(day, lat, lng);
+export default function getData(location, day) {
+  const url = apiURL(day, location.lat, location.lng);
   return fetch(url).then(response => response.json());
 }
