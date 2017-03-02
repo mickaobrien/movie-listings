@@ -42,6 +42,7 @@
 
 .theater-name {
   text-align: center;
+  text-transform: uppercase;
 }
 
 .theater-details {
