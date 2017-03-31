@@ -16,8 +16,8 @@ function pad(number) {
 }
 function formatTimeString(dateString) {
   const date = parseDateString(dateString);
-  const hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
   return `${pad(hours)}:${pad(minutes)}`;
 }
 
